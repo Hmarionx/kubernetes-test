@@ -1,0 +1,48 @@
+# apiVersion: traefik.containo.us/v1alpha1
+# kind: IngressRoute
+# metadata:
+#   name: myingressroute
+#   namespace: default
+
+# spec:
+#   entryPoints:
+#     - web
+
+#   routes:
+#   - match: Host(`whoami.lan.repe.re`)
+#     kind: Rule
+#     services:
+#     - name: whoami
+#       port: 80
+
+---
+kind: Ingress
+apiVersion: networking.k8s.io/v1
+metadata:
+  name: myingress
+  namespace: default
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure
+
+spec:
+  rules:
+    - host: traefik.lan.repe.re
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: traefik
+                port:
+                  number: 8080
+    - host: whoami.lan.repe.re
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: whoami
+                port:
+                  number: 80
