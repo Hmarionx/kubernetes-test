@@ -18,9 +18,12 @@ data:
 
       websecure:
         address: :443
+        http:
+          tls: {}
 
     api:
       dashboard: true
+      insecure: true
 
     providers:
       kubernetesCRD: {}
