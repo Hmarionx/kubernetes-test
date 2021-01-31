@@ -9,7 +9,7 @@ metadata:
   name: portainer-sa-clusteradmin
   namespace: portainer
 ---
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   name: portainer-crb-clusteradmin
@@ -62,7 +62,11 @@ spec:
       serviceAccountName: portainer-sa-clusteradmin
       containers:
       - name: portainer
-        image: portainerci/portainer:develop
+        image: portainer/portainer-ce:2.0.1
+        resources:
+          limits:
+            memory: "256Mi"
+            cpu: "1"
         imagePullPolicy: Always
         ports:
         - containerPort: 9000

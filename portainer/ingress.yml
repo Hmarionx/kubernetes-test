@@ -1,0 +1,19 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-portainer
+  namespace: portainer
+  annotations:
+    traefik.ingress.kubernetes.io/router.entrypoints: websecure,web
+spec:
+  rules:
+    - host: portainer.lan.repe.re
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: portainer
+                port:
+                  number: 9000
