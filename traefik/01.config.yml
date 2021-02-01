@@ -29,6 +29,4 @@ data:
       kubernetesCRD: {}
       kubernetesIngress: {}
 
-    log:
-      level: DEBUG
     accessLog: {}

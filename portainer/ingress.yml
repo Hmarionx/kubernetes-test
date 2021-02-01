@@ -4,7 +4,7 @@ metadata:
   name: ingress-portainer
   namespace: portainer
   annotations:
-    traefik.ingress.kubernetes.io/router.entrypoints: websecure,web
+    kubernetes.io/ingress.class: "nginx"
 spec:
   rules:
     - host: portainer.lan.repe.re
