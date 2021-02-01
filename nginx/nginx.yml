@@ -10,7 +10,7 @@ metadata:
   name: ingress-nginx-controller
   namespace: ingress-nginx
 data:
-
+  disable-access-log: "true"
 
 ---
 # Source: ingress-nginx/templates/controller-service.yaml
@@ -143,6 +143,9 @@ spec:
             requests:
               cpu: 100m
               memory: 90Mi
+            limits:
+              cpu: 500m
+              memory: 500Mi
       nodeSelector:
         kubernetes.io/os: linux
         node-role.kubernetes.io/master: "true"
