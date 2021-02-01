@@ -1,0 +1,23 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "600"
+    nginx.ingress.kubernetes.io/auth-type: basic
+    nginx.ingress.kubernetes.io/auth-secret: registry-basic-auth
+  name: docker-registry
+  namespace: docker-registry
+spec:
+  rules:
+  - host: registry.lan.repe.re
+    http:
+      paths:
+      - backend:
+          service:
+            name: docker-registry
+            port:
+              number: 5000
+        path: /
+        pathType: Prefix
