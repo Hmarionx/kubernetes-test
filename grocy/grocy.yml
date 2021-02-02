@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grocy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grocy
+  template:
+    metadata:
+      labels:
+        app: grocy
+    spec:
+      containers:
+        - name: grocy
+          imagePullPolicy: Always
+          image: ghcr.io/linuxserver/grocy:arm64v8-latest
+          resources:
+            limits:
+              memory: "256Mi"
+              cpu: "0.5"
+          env:
+            - name: PUID
+              value: "1000"
+            - name: PGID
+              value: "1000"
+            - name: TZ
+              value: "Europe/Paris>"
+          ports:
+            - name: http
+              containerPort: 80
+          volumeMounts:
+            - name: config
+              mountPath: "/config"
+            - name: db
+              mountPath: /var/www/data
+      volumes:
+        - name: config
+          emptyDir: {}
+        - name: db
+          emptyDir: {}
+
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: grocy
+  labels:
+    app: grocy
+spec:
+  selector:
+    app: grocy
+  ports:
+    - name: http
+      port: 9283
+      targetPort: 80

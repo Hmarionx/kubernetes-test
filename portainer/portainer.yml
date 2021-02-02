@@ -18,9 +18,9 @@ roleRef:
   kind: ClusterRole
   name: cluster-admin
 subjects:
-- kind: ServiceAccount
-  name: portainer-sa-clusteradmin
-  namespace: portainer
+  - kind: ServiceAccount
+    name: portainer-sa-clusteradmin
+    namespace: portainer
 ---
 apiVersion: v1
 kind: Service
@@ -30,7 +30,7 @@ metadata:
   labels:
     io.portainer.kubernetes.application.stack: portainer
 spec:
-  type: LoadBalancer
+  type: ClusterIP
   selector:
     app: app-portainer
   ports:
@@ -38,10 +38,23 @@ spec:
       protocol: TCP
       port: 9000
       targetPort: 9000
-    - name: edge
-      protocol: TCP
-      port: 8000
+    - port: 8000
       targetPort: 8000
+      protocol: TCP
+      name: edge
+---
+kind: "PersistentVolumeClaim"
+apiVersion: "v1"
+metadata:
+  name: portainer
+  namespace: portainer
+spec:
+  accessModes:
+    - "ReadWriteOnce"
+  storageClassName: local-path
+  resources:
+    requests:
+      storage: "5Gi"
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -51,6 +64,9 @@ metadata:
   labels:
     io.portainer.kubernetes.application.stack: portainer
 spec:
+  replicas: 1
+  strategy:
+    type: "Recreate"
   selector:
     matchLabels:
       app: app-portainer
@@ -60,16 +76,33 @@ spec:
         app: app-portainer
     spec:
       serviceAccountName: portainer-sa-clusteradmin
+      volumes:
+        - name: "data"
+          persistentVolumeClaim:
+            claimName: portainer
       containers:
-      - name: portainer
-        image: portainer/portainer-ce:2.0.1
-        resources:
-          limits:
-            memory: "256Mi"
-            cpu: "1"
-        imagePullPolicy: Always
-        ports:
-        - containerPort: 9000
-          protocol: TCP
-        - containerPort: 8000
-          protocol: TCP
+        - name: portainer
+          image: portainer/portainer-ce:2.1.0
+          imagePullPolicy: Always
+          volumeMounts:
+            - name: data
+              mountPath: /data
+          resources:
+            limits:
+              memory: "256Mi"
+              cpu: "1"
+          ports:
+            - name: http
+              containerPort: 9000
+              protocol: TCP
+            - name: tcp-edge
+              containerPort: 8000
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 9000
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 9000
