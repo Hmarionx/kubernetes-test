@@ -44,7 +44,8 @@ metadata:
 spec:
   type: ClusterIP
   selector:
-    app: app-portainer
+    app.kubernetes.io/name: portainer
+    app.kubernetes.io/instance: portainer
   ports:
     - port: 9000
       targetPort: 9000
