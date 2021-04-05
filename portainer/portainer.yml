@@ -1,18 +1,27 @@
+# Source: portainer/templates/namespace.yaml
 apiVersion: v1
 kind: Namespace
 metadata:
   name: portainer
 ---
+# Source: portainer/templates/serviceaccount.yaml
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: portainer-sa-clusteradmin
   namespace: portainer
+  labels:
+    app.kubernetes.io/name: portainer
+    app.kubernetes.io/instance: portainer
 ---
+# Source: portainer/templates/rbac.yaml
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: portainer-crb-clusteradmin
+  name: portainer
+  labels:
+    app.kubernetes.io/name: portainer
+    app.kubernetes.io/instance: portainer
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
@@ -22,6 +31,7 @@ subjects:
     name: portainer-sa-clusteradmin
     namespace: portainer
 ---
+# Source: portainer/templates/service.yaml
 apiVersion: v1
 kind: Service
 metadata:
@@ -29,25 +39,32 @@ metadata:
   namespace: portainer
   labels:
     io.portainer.kubernetes.application.stack: portainer
+    app.kubernetes.io/name: portainer
+    app.kubernetes.io/instance: portainer
 spec:
   type: ClusterIP
   selector:
     app: app-portainer
   ports:
-    - name: http
-      protocol: TCP
-      port: 9000
+    - port: 9000
       targetPort: 9000
+      protocol: TCP
+      name: http
     - port: 8000
       targetPort: 8000
       protocol: TCP
       name: edge
 ---
+# Source: portainer/templates/pvc.yaml
 kind: "PersistentVolumeClaim"
 apiVersion: "v1"
 metadata:
   name: portainer
   namespace: portainer
+  labels:
+    io.portainer.kubernetes.application.stack: portainer
+    app.kubernetes.io/name: portainer
+    app.kubernetes.io/instance: portainer
 spec:
   accessModes:
     - "ReadWriteOnce"
@@ -56,6 +73,7 @@ spec:
     requests:
       storage: "5Gi"
 ---
+# Source: portainer/templates/deployment.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -63,26 +81,33 @@ metadata:
   namespace: portainer
   labels:
     io.portainer.kubernetes.application.stack: portainer
+    app.kubernetes.io/name: portainer
+    app.kubernetes.io/instance: portainer
 spec:
   replicas: 1
   strategy:
     type: "Recreate"
   selector:
     matchLabels:
-      app: app-portainer
+      app.kubernetes.io/name: portainer
+      app.kubernetes.io/instance: portainer
   template:
     metadata:
       labels:
-        app: app-portainer
+        app.kubernetes.io/name: portainer
+        app.kubernetes.io/instance: portainer
     spec:
       serviceAccountName: portainer-sa-clusteradmin
+      nodeSelector:
+        kubernetes.io/os: linux
+        node-role.kubernetes.io/master: "true"
       volumes:
         - name: "data"
           persistentVolumeClaim:
             claimName: portainer
       containers:
         - name: portainer
-          image: portainer/portainer-ce:2.1.0
+          image: portainer/portainer-ce:2.1.1
           imagePullPolicy: Always
           volumeMounts:
             - name: data
