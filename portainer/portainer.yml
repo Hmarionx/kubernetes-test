@@ -42,7 +42,6 @@ metadata:
     app.kubernetes.io/name: portainer
     app.kubernetes.io/instance: portainer
 spec:
-  type: ClusterIP
   selector:
     app.kubernetes.io/name: portainer
     app.kubernetes.io/instance: portainer
