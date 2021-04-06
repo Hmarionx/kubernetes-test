@@ -21,7 +21,6 @@ metadata:
   name: prometheus
   namespace: monitoring
   labels:
-    io.portainer.kubernetes.application.stack: prometheus
     app.kubernetes.io/name: prometheus
     app.kubernetes.io/instance: prometheus
 spec:
@@ -70,7 +69,7 @@ data:
         regex: ([^:]+)(?::\d+)?;(\d+)
         replacement: $1:$2
       - source_labels: [__meta_kubernetes_service_name]
-        regex: prometheus-server
+        regex: prometheus
         action: drop
 
 ---
