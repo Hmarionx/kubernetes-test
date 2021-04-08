@@ -22,6 +22,11 @@ metadata:
     app.kubernetes.io/instance: ingress-nginx
     app.kubernetes.io/version: 0.44.0
     app.kubernetes.io/component: controller
+  annotations:
+    prometheus.io/path: /metrics
+    prometheus.io/port: "10254"
+    prometheus.io/scheme: http
+    prometheus.io/scrape: "true"
   name: ingress-nginx-controller
   namespace: ingress-nginx
 spec:
@@ -36,6 +41,10 @@ spec:
       port: 443
       protocol: TCP
       targetPort: https
+    - name: prometheus
+      port: 10254
+      protocol: TCP
+      targetPort: 10254
   selector:
     app.kubernetes.io/name: ingress-nginx
     app.kubernetes.io/instance: ingress-nginx

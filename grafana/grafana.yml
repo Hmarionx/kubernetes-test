@@ -60,8 +60,11 @@ spec:
         kubernetes.io/os: linux
         node-role.kubernetes.io/master: "true"
       containers:
-        - image: grafana/grafana:7.5.2
+        - image: grafana/grafana:7.5.3
           name: grafana
+          env:
+           - name: GF_INSTALL_PLUGINS
+             value: grafana-piechart-panel
           ports:
             - containerPort: 3000
               protocol: TCP
