@@ -128,7 +128,7 @@ spec:
       serviceAccountName: prometheus-node-exporter
       containers:
         - name: prometheus-node-exporter
-          image: "quay.io/prometheus/node-exporter:v1.0.1"
+          image: "quay.io/prometheus/node-exporter:v1.1.2"
           imagePullPolicy: "IfNotPresent"
           args:
             - --path.procfs=/host/proc
@@ -233,6 +233,13 @@ spec:
         - --telemetry-port=8081
         imagePullPolicy: IfNotPresent
         image: "k8s.gcr.io/kube-state-metrics/kube-state-metrics:v1.9.8"
+        resources:
+          limits:
+            cpu: 200m
+            memory: 50Mi
+          requests:
+            cpu: 100m
+            memory: 30Mi
         ports:
         - containerPort: 8080
         livenessProbe:
@@ -272,7 +279,7 @@ spec:
       serviceAccountName: prometheus-pushgateway
       containers:
         - name: prometheus-pushgateway
-          image: "prom/pushgateway:v1.3.1"
+          image: "quay.io/prometheus/pushgateway:v1.4.0"
           imagePullPolicy: "IfNotPresent"
           ports:
             - containerPort: 9091
@@ -327,7 +334,7 @@ spec:
       containers:
 
         - name: prometheus-server
-          image: "quay.io/prometheus/prometheus:v2.24.0"
+          image: "quay.io/prometheus/prometheus:v2.26.0"
           imagePullPolicy: "IfNotPresent"
           args:
             - --storage.tsdb.retention.time=7d
