@@ -1,126 +1,390 @@
+---
+# Source: prometheus/charts/kube-state-metrics/templates/service.yaml
 apiVersion: v1
 kind: Service
 metadata:
-  name: prometheus
+  name: kube-state-metrics
   namespace: monitoring
   labels:
-    app.kubernetes.io/name: prometheus
-    app.kubernetes.io/instance: prometheus
+    app.kubernetes.io/name: kube-state-metrics
+  annotations:
+    prometheus.io/scrape: 'true'
 spec:
-  selector:
-    app.kubernetes.io/name: prometheus
+  type: "ClusterIP"
   ports:
-    - port: 9090
+  - name: "http"
+    protocol: TCP
+    port: 8080
+    targetPort: 8080
+
+  selector:
+    app.kubernetes.io/name: kube-state-metrics
+---
+# Source: prometheus/templates/node-exporter/svc.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    prometheus.io/scrape: "true"
+  labels:
+    component: "node-exporter"
+    app: prometheus
+  name: prometheus-node-exporter
+  namespace: monitoring
+spec:
+  clusterIP: None
+  ports:
+    - name: metrics
+      port: 9100
+      protocol: TCP
+      targetPort: 9100
+  selector:
+    component: "node-exporter"
+    app: prometheus
+  type: "ClusterIP"
+---
+# Source: prometheus/templates/pushgateway/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    prometheus.io/probe: pushgateway
+  labels:
+    component: "pushgateway"
+    app: prometheus
+  name: prometheus-pushgateway
+  namespace: monitoring
+spec:
+  ports:
+    - name: http
+      port: 9091
+      protocol: TCP
+      targetPort: 9091
+  selector:
+    component: "pushgateway"
+    app: prometheus
+  type: "ClusterIP"
+---
+# Source: prometheus/templates/server/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    component: "server"
+    app: prometheus
+  name: prometheus-server
+  namespace: monitoring
+spec:
+  ports:
+    - name: http
+      port: 80
       protocol: TCP
       targetPort: 9090
-
+  selector:
+    component: "server"
+    app: prometheus
+  sessionAffinity: None
+  type: "ClusterIP"
 ---
-kind: "PersistentVolumeClaim"
-apiVersion: "v1"
+# Source: prometheus/templates/server/pvc.yaml
+apiVersion: v1
+kind: PersistentVolumeClaim
 metadata:
-  name: prometheus
-  namespace: monitoring
   labels:
-    app.kubernetes.io/name: prometheus
-    app.kubernetes.io/instance: prometheus
+    component: "server"
+    app: prometheus
+  name: prometheus-server
+  namespace: monitoring
 spec:
   accessModes:
-    - "ReadWriteOnce"
-  storageClassName: local-path
+    - ReadWriteOnce
+  storageClassName: "local-path"
   resources:
     requests:
-      storage: "10Gi"
-
+      storage: "8Gi"
 ---
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: prometheus
-  namespace: monitoring
-  labels:
-    app.kubernetes.io/name: prometheus
-    app.kubernetes.io/instance: prometheus
-data:
-  prometheus.yaml: |
-    global:
-      scrape_interval: 10s
-    scrape_configs:
-    - job_name: 'ingress-nginx-endpoints'
-      kubernetes_sd_configs:
-      - role: pod
-        namespaces:
-          names:
-          - ingress-nginx
-      relabel_configs:
-      - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
-        action: keep
-        regex: true
-      - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scheme]
-        action: replace
-        target_label: __scheme__
-        regex: (https?)
-      - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_path]
-        action: replace
-        target_label: __metrics_path__
-        regex: (.+)
-      - source_labels: [__address__, __meta_kubernetes_pod_annotation_prometheus_io_port]
-        action: replace
-        target_label: __address__
-        regex: ([^:]+)(?::\d+)?;(\d+)
-        replacement: $1:$2
-      - source_labels: [__meta_kubernetes_service_name]
-        regex: prometheus
-        action: drop
-
----
+# Source: prometheus/templates/node-exporter/daemonset.yaml
 apiVersion: apps/v1
-kind: Deployment
+kind: DaemonSet
 metadata:
-  name: prometheus
-  namespace: monitoring
   labels:
-    app.kubernetes.io/name: prometheus
-    app.kubernetes.io/instance: prometheus
+    component: "node-exporter"
+    app: prometheus
+  name: prometheus-node-exporter
+  namespace: monitoring
 spec:
-  replicas: 1
   selector:
     matchLabels:
-      app.kubernetes.io/name: prometheus
-      app.kubernetes.io/instance: prometheus
+      component: "node-exporter"
+      app: prometheus
+  updateStrategy:
+    type: RollingUpdate
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: prometheus
-        app.kubernetes.io/instance: prometheus
+        component: "node-exporter"
+        app: prometheus
     spec:
-      serviceAccountName: prometheus
+      serviceAccountName: prometheus-node-exporter
+      containers:
+        - name: prometheus-node-exporter
+          image: "quay.io/prometheus/node-exporter:v1.0.1"
+          imagePullPolicy: "IfNotPresent"
+          args:
+            - --path.procfs=/host/proc
+            - --path.sysfs=/host/sys
+            - --path.rootfs=/host/root
+            - --web.listen-address=:9100
+          ports:
+            - name: metrics
+              containerPort: 9100
+              hostPort: 9100
+          resources:
+            limits:
+              cpu: 200m
+              memory: 50Mi
+            requests:
+              cpu: 100m
+              memory: 30Mi
+          volumeMounts:
+            - name: proc
+              mountPath: /host/proc
+              readOnly:  true
+            - name: sys
+              mountPath: /host/sys
+              readOnly: true
+            - name: root
+              mountPath: /host/root
+              mountPropagation: HostToContainer
+              readOnly: true
+      hostNetwork: true
+      hostPID: true
+      securityContext:
+        fsGroup: 65534
+        runAsGroup: 65534
+        runAsNonRoot: true
+        runAsUser: 65534
+      volumes:
+        - name: proc
+          hostPath:
+            path: /proc
+        - name: sys
+          hostPath:
+            path: /sys
+        - name: root
+          hostPath:
+            path: /
+---
+# Source: prometheus/charts/kube-state-metrics/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: kube-state-metrics
+  namespace: monitoring
+  labels:
+    app.kubernetes.io/name: kube-state-metrics
+    app.kubernetes.io/version: "1.9.8"
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: kube-state-metrics
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: kube-state-metrics
+    spec:
+      hostNetwork: false
+      serviceAccountName: kube-state-metrics
+      securityContext:
+        fsGroup: 65534
+        runAsGroup: 65534
+        runAsUser: 65534
+      containers:
+      - name: kube-state-metrics
+        args:
+        - --collectors=certificatesigningrequests
+        - --collectors=configmaps
+        - --collectors=cronjobs
+        - --collectors=daemonsets
+        - --collectors=deployments
+        - --collectors=endpoints
+        - --collectors=horizontalpodautoscalers
+        - --collectors=ingresses
+        - --collectors=jobs
+        - --collectors=limitranges
+        - --collectors=mutatingwebhookconfigurations
+        - --collectors=namespaces
+        - --collectors=networkpolicies
+        - --collectors=nodes
+        - --collectors=persistentvolumeclaims
+        - --collectors=persistentvolumes
+        - --collectors=poddisruptionbudgets
+        - --collectors=pods
+        - --collectors=replicasets
+        - --collectors=replicationcontrollers
+        - --collectors=resourcequotas
+        - --collectors=secrets
+        - --collectors=services
+        - --collectors=statefulsets
+        - --collectors=storageclasses
+        - --collectors=validatingwebhookconfigurations
+        - --collectors=volumeattachments
+        - --telemetry-port=8081
+        imagePullPolicy: IfNotPresent
+        image: "k8s.gcr.io/kube-state-metrics/kube-state-metrics:v1.9.8"
+        ports:
+        - containerPort: 8080
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 8080
+          initialDelaySeconds: 5
+          timeoutSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 8080
+          initialDelaySeconds: 5
+          timeoutSeconds: 5
+---
+# Source: prometheus/templates/pushgateway/deploy.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    component: "pushgateway"
+    app: prometheus
+  name: prometheus-pushgateway
+  namespace: monitoring
+spec:
+  selector:
+    matchLabels:
+      component: "pushgateway"
+      app: prometheus
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        component: "pushgateway"
+        app: prometheus
+    spec:
+      serviceAccountName: prometheus-pushgateway
+      containers:
+        - name: prometheus-pushgateway
+          image: "prom/pushgateway:v1.3.1"
+          imagePullPolicy: "IfNotPresent"
+          args:
+          ports:
+            - containerPort: 9091
+          livenessProbe:
+            httpGet:
+              path: /-/healthy
+              port: 9091
+            initialDelaySeconds: 10
+            timeoutSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /-/ready
+              port: 9091
+            initialDelaySeconds: 10
+            timeoutSeconds: 10
+          resources:
+            limits:
+              cpu: 10m
+              memory: 32Mi
+            requests:
+              cpu: 10m
+              memory: 32Mi
       nodeSelector:
         kubernetes.io/os: linux
         node-role.kubernetes.io/master: "true"
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 65534
+---
+# Source: prometheus/templates/server/deploy.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    component: "server"
+    app: prometheus
+  name: prometheus-server
+  namespace: monitoring
+spec:
+  selector:
+    matchLabels:
+      component: "server"
+      app: prometheus
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        component: "server"
+        app: prometheus
+    spec:
+      serviceAccountName: prometheus-server
       containers:
-        - name: prometheus
-          image: prom/prometheus:v2.26.0
+
+        - name: prometheus-server
+          image: "quay.io/prometheus/prometheus:v2.24.0"
+          imagePullPolicy: "IfNotPresent"
           args:
-            - "--config.file=/etc/prometheus/prometheus.yaml"
-            - "--storage.tsdb.path=/prometheus/"
+            - --storage.tsdb.retention.time=7d
+            - --config.file=/etc/config/prometheus.yml
+            - --storage.tsdb.path=/data
+            - --web.console.libraries=/etc/prometheus/console_libraries
+            - --web.console.templates=/etc/prometheus/consoles
+            - --web.enable-lifecycle
           ports:
             - containerPort: 9090
-          volumeMounts:
-            - name: prometheus-config-volume
-              mountPath: /etc/prometheus/
-            - name: prometheus-storage-volume
-              mountPath: /prometheus/
+          readinessProbe:
+            httpGet:
+              path: /-/ready
+              port: 9090
+            initialDelaySeconds: 30
+            periodSeconds: 5
+            timeoutSeconds: 4
+            failureThreshold: 3
+            successThreshold: 1
+          livenessProbe:
+            httpGet:
+              path: /-/healthy
+              port: 9090
+            initialDelaySeconds: 30
+            periodSeconds: 15
+            timeoutSeconds: 10
+            failureThreshold: 3
+            successThreshold: 1
           resources:
             limits:
-              cpu: 1
-              memory: 2Gi
+              cpu: 1000m
+              memory: 1Gi
             requests:
-              cpu: 100m
-              memory: 100Mi
+              cpu: 500m
+              memory: 512Mi
+          volumeMounts:
+            - name: config-volume
+              mountPath: /etc/config
+            - name: storage-volume
+              mountPath: /data
+              subPath: ""
+      hostNetwork: false
+      dnsPolicy: ClusterFirst
+      nodeSelector:
+        kubernetes.io/os: linux
+        node-role.kubernetes.io/master: "true"
+      securityContext:
+        fsGroup: 65534
+        runAsGroup: 65534
+        runAsNonRoot: true
+        runAsUser: 65534
+      terminationGracePeriodSeconds: 300
       volumes:
-        - name: prometheus-config-volume
+        - name: config-volume
           configMap:
-            name: prometheus
-        - name: prometheus-storage-volume
+            name: prometheus-server
+        - name: storage-volume
           persistentVolumeClaim:
-            claimName: prometheus
+            claimName: prometheus-server
