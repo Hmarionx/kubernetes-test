@@ -1,0 +1,72 @@
+# Source: minio/templates/post-install-prometheus-metrics-serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: minio-update-prometheus-secret
+  namespace: db
+  labels:
+    app: minio-update-prometheus-secret
+    release: minio
+---
+# Source: minio/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: minio
+  namespace: db
+  labels:
+    app: minio
+    release: minio
+---
+# Source: minio/templates/post-install-prometheus-metrics-role.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: minio-update-prometheus-secret
+  labels:
+    app: minio-update-prometheus-secret
+    release: minio
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - secrets
+    verbs:
+      - get
+      - create
+      - update
+      - patch
+    resourceNames:
+      - minio-prometheus
+  - apiGroups:
+      - ""
+    resources:
+      - secrets
+    verbs:
+      - create
+  - apiGroups:
+      - monitoring.coreos.com
+    resources:
+      - servicemonitors
+    verbs:
+      - get
+    resourceNames:
+      - minio
+---
+# Source: minio/templates/post-install-prometheus-metrics-rolebinding.yaml
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: minio-update-prometheus-secret
+  labels:
+    app: minio-update-prometheus-secret
+    release: minio
+    namespace: db
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: minio-update-prometheus-secret
+subjects:
+  - kind: ServiceAccount
+    name: minio-update-prometheus-secret
+    namespace: db

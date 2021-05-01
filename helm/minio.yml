@@ -1,0 +1,37 @@
+mode: distributed
+replicas: 2
+image:
+  tag: RELEASE.2021-04-22T15-44-28Z--namespace
+
+metrics:
+  serviceMonitor:
+    enabled: false
+    namespace: monitoring
+    additionalLabels:
+      prometheus.io/scrape: "true"
+
+persistence:
+  enabled: true
+  size: 100Gi
+  storageClass: "local-storage"
+
+resources:
+  requests:
+    memory: 1Gi
+
+nodeSelector:
+  kubernetes.io/os: linux
+  repe.re/type: "db"
+affinity:
+  podAntiAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+    - labelSelector:
+        matchExpressions:
+          - key: "app.kubernetes.io/name"
+            operator: In
+            values:
+            - minio
+      topologyKey: "kubernetes.io/hostname"
+
+mcImage:
+  tag: RELEASE.2021-04-22T17-40-00Z
