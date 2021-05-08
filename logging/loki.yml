@@ -3,32 +3,11 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: loki-headless
-  namespace: logging
-  labels:
-    app: loki
-    variant: headless
-spec:
-  clusterIP: None
-  ports:
-    - port: 3100
-      protocol: TCP
-      name: http-metrics
-      targetPort: http-metrics
-  selector:
-    app: loki
-
----
-# Source: loki-stack/charts/loki/templates/service.yaml
-apiVersion: v1
-kind: Service
-metadata:
   name: loki
   namespace: logging
   labels:
     app: loki
 spec:
-  type: ClusterIP
   ports:
     - port: 3100
       protocol: TCP
