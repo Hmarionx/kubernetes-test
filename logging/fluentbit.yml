@@ -24,15 +24,10 @@ spec:
     spec:
       containers:
       - name: fluent-bit
-        image: fluent/fluent-bit:1.5
-        imagePullPolicy: Always
+        image: fluent/fluent-bit:1.7
+        imagePullPolicy: IfNotPresent
         ports:
           - containerPort: 2020
-        env:
-        - name: FLUENT_ELASTICSEARCH_HOST
-          value: "elasticsearch"
-        - name: FLUENT_ELASTICSEARCH_PORT
-          value: "9200"
         volumeMounts:
         - name: varlog
           mountPath: /var/log
@@ -41,6 +36,12 @@ spec:
           readOnly: true
         - name: fluent-bit-config
           mountPath: /fluent-bit/etc/
+          resources:
+            limits:
+              memory: 100Mi
+            requests:
+              cpu: 100m
+              memory: 100Mi
       terminationGracePeriodSeconds: 10
       volumes:
       - name: varlog

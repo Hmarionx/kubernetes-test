@@ -20,7 +20,7 @@ data:
 
     @INCLUDE input-kubernetes.conf
     @INCLUDE filter-kubernetes.conf
-    @INCLUDE output-elasticsearch.conf
+    @INCLUDE output-loki.conf
 
   input-kubernetes.conf: |
     [INPUT]
@@ -55,6 +55,21 @@ data:
         Logstash_Format On
         Replace_Dots    On
         Retry_Limit     False
+
+  output-loki.conf: |
+    [Output]
+      Name grafana-loki
+      Match *
+      Url http://loki-stack-1620504144:3100/api/prom/push
+      TenantID ""
+      BatchWait 1
+      BatchSize 1048576
+      Labels {job="fluent-bit"}
+      RemoveKeys kubernetes,stream
+      AutoKubernetesLabels false
+      LabelMapPath /fluent-bit/etc/labelmap.json
+      LineFormat json
+      LogLevel warn
 
   parsers.conf: |
     [PARSER]
@@ -110,3 +125,18 @@ data:
         Regex       ^\<(?<pri>[0-9]+)\>(?<time>[^ ]* {1,2}[^ ]* [^ ]*) (?<host>[^ ]*) (?<ident>[a-zA-Z0-9_\/\.\-]*)(?:\[(?<pid>[0-9]+)\])?(?:[^\:]*\:)? *(?<message>.*)$
         Time_Key    time
         Time_Format %b %d %H:%M:%S
+
+  labelmap.json: |
+    {
+      "kubernetes": {
+        "container_name": "container",
+        "host": "node",
+        "labels": {
+          "app": "app",
+          "release": "release"
+        },
+        "namespace_name": "namespace",
+        "pod_name": "instance"
+      },
+      "stream": "stream"
+    }
