@@ -36,12 +36,12 @@ spec:
           readOnly: true
         - name: fluent-bit-config
           mountPath: /fluent-bit/etc/
-          resources:
-            limits:
-              memory: 100Mi
-            requests:
-              cpu: 100m
-              memory: 100Mi
+        resources:
+          limits:
+            memory: 100Mi
+          requests:
+            cpu: 100m
+            memory: 100Mi
       terminationGracePeriodSeconds: 10
       volumes:
       - name: varlog

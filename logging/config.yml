@@ -99,30 +99,14 @@ data:
         K8S-Logging.Parser  On
         K8S-Logging.Exclude Off
 
-  output-elasticsearch.conf: |
-    [OUTPUT]
-        Name            es
-        Match           *
-        Host            ${FLUENT_ELASTICSEARCH_HOST}
-        Port            ${FLUENT_ELASTICSEARCH_PORT}
-        Logstash_Format On
-        Replace_Dots    On
-        Retry_Limit     False
-
   output-loki.conf: |
-    [Output]
-      Name grafana-loki
-      Match *
-      Url http://loki-stack-1620504144:3100/api/prom/push
-      TenantID ""
-      BatchWait 1
-      BatchSize 1048576
-      Labels {job="fluent-bit"}
-      RemoveKeys kubernetes,stream
-      AutoKubernetesLabels false
-      LabelMapPath /fluent-bit/etc/labelmap.json
-      LineFormat json
-      LogLevel warn
+    [OUTPUT]
+        name                   loki
+        match                  *
+        host                   loki.logging.svc.cluster.local
+        port                   3100
+        labels                 job=fluentbit
+        auto_kubernetes_labels on
 
   parsers.conf: |
     [PARSER]

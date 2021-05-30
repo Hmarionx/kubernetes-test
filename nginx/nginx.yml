@@ -10,7 +10,7 @@ metadata:
   name: ingress-nginx-controller
   namespace: ingress-nginx
 data:
-  disable-access-log: "true"
+  disable-access-log: "false"
 
 ---
 # Source: ingress-nginx/templates/controller-service.yaml
