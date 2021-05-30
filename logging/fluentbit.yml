@@ -21,6 +21,7 @@ spec:
         prometheus.io/scrape: "true"
         prometheus.io/port: "2020"
         prometheus.io/path: /api/v1/metrics/prometheus
+        fluentbit.io/exclude: "True"
     spec:
       containers:
       - name: fluent-bit

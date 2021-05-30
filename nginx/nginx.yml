@@ -75,7 +75,8 @@ spec:
         app.kubernetes.io/name: ingress-nginx
         app.kubernetes.io/instance: ingress-nginx
         app.kubernetes.io/component: controller
-        fluentbit.io/parser: nginx
+      annotations:
+        fluentbit.io/parser: ingress
     spec:
       dnsPolicy: ClusterFirst
       containers:
