@@ -85,7 +85,7 @@ data:
         Name              tail
         Tag               kube.*
         Path              /var/log/containers/*.log
-        Exclude_path     *fluent-bit*
+        Exclude_path      *fluent-bit*
         Parser            cri
         DB                /var/log/flb_kube.db
         Mem_Buf_Limit     5MB
@@ -233,6 +233,10 @@ data:
         Name    catchall
         Format  regex
         Regex   ^(?<message>.*)$
+
+    [PARSER]
+        Name        logfmt
+        Format      logfmt
 
     [PARSER]
         Name    kube-custom

@@ -55,6 +55,8 @@ spec:
       labels:
         app.kubernetes.io/name: grafana
         app.kubernetes.io/instance: grafana
+      annotations:
+        fluentbit.io/parser: logfmt
     spec:
       nodeSelector:
         kubernetes.io/os: linux

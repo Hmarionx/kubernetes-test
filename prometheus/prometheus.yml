@@ -329,6 +329,8 @@ spec:
       labels:
         component: "server"
         app: prometheus
+      annotations:
+        fluentbit.io/parser: logfmt
     spec:
       serviceAccountName: prometheus-server
       containers:

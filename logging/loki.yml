@@ -44,6 +44,7 @@ spec:
       annotations:
         prometheus.io/port: http-metrics
         prometheus.io/scrape: "true"
+        fluentbit.io/parser: logfmt
     spec:
       serviceAccountName: loki
       securityContext:

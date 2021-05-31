@@ -36,6 +36,8 @@ spec:
     metadata:
       labels:
         app.kubernetes.io/name: elasticsearch
+      annotations:
+        fluentbit.io/parser: json
     spec:
       nodeSelector:
         kubernetes.io/os: linux
