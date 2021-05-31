@@ -19,8 +19,8 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   labels:
-    component: "node-exporter"
-    app: prometheus
+    app.kubernetes.io/component: node-exporter
+    app.kubernetes.io/name: prometheus
   name: prometheus-node-exporter
   namespace: monitoring
   annotations:
@@ -31,8 +31,8 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   labels:
-    component: "pushgateway"
-    app: prometheus
+    app.kubernetes.io/component: pushgateway
+    app.kubernetes.io/name: prometheus
   name: prometheus-pushgateway
   namespace: monitoring
   annotations:
@@ -43,8 +43,8 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   labels:
-    component: "server"
-    app: prometheus
+    app.kubernetes.io/component: server
+    app.kubernetes.io/name: prometheus
   name: prometheus-server
   namespace: monitoring
   annotations:
@@ -199,8 +199,8 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   labels:
-    component: "pushgateway"
-    app: prometheus
+    app.kubernetes.io/component: pushgateway
+    app.kubernetes.io/name: prometheus
   name: prometheus-pushgateway
 rules:
   []
@@ -210,8 +210,8 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   labels:
-    component: "server"
-    app: prometheus
+    app.kubernetes.io/component: server
+    app.kubernetes.io/name: prometheus
   name: prometheus-server
 rules:
   - apiGroups:
@@ -265,8 +265,8 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   labels:
-    component: "pushgateway"
-    app: prometheus
+    app.kubernetes.io/component: pushgateway
+    app.kubernetes.io/name: prometheus
   name: prometheus-pushgateway
 subjects:
   - kind: ServiceAccount
@@ -282,8 +282,8 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   labels:
-    component: "server"
-    app: prometheus
+    app.kubernetes.io/component: server
+    app.kubernetes.io/name: prometheus
   name: prometheus-server
 subjects:
   - kind: ServiceAccount

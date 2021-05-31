@@ -4,24 +4,24 @@ metadata:
   name: fluent-bit
   namespace: logging
   labels:
-    k8s-app: fluent-bit-logging
-    version: v1
+    app.kubernetes.io/name: fluent-bit
+    app.kubernetes.io/instance: fluent-bit
     kubernetes.io/cluster-service: "true"
 spec:
   selector:
     matchLabels:
-      k8s-app: fluent-bit-logging
+      app.kubernetes.io/name: fluent-bit
   template:
     metadata:
       labels:
-        k8s-app: fluent-bit-logging
-        version: v1
+        app.kubernetes.io/name: fluent-bit
+        app.kubernetes.io/instance: fluent-bit
         kubernetes.io/cluster-service: "true"
       annotations:
         prometheus.io/scrape: "true"
         prometheus.io/port: "2020"
         prometheus.io/path: /api/v1/metrics/prometheus
-        fluentbit.io/exclude: "True"
+        fluentbit.io/exclude: "true"
     spec:
       containers:
       - name: fluent-bit

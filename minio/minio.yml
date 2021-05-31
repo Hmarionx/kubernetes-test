@@ -6,8 +6,8 @@ metadata:
   namespace: db
   name: minio
   labels:
-    app: minio
-    release: minio
+    app.kubernetes.io/name: minio
+    app.kubernetes.io/instance: minio
 spec:
   ports:
     - name: http
@@ -15,8 +15,7 @@ spec:
       protocol: TCP
       targetPort: 9000
   selector:
-    app: minio
-    release: minio
+    app.kubernetes.io/name: minio
 ---
 # Source: minio/templates/statefulset.yaml
 apiVersion: v1
@@ -25,8 +24,8 @@ metadata:
   namespace: db
   name: minio-svc
   labels:
-    app: minio
-    release: minio
+    app.kubernetes.io/name: minio
+    app.kubernetes.io/instance: minio
 spec:
   publishNotReadyAddresses: true
   ports:
@@ -34,8 +33,7 @@ spec:
       port: 9000
       protocol: TCP
   selector:
-    app: minio
-    release: minio
+    app.kubernetes.io/name: minio
 ---
 # Source: minio/templates/statefulset.yaml
 apiVersion: apps/v1
@@ -44,8 +42,8 @@ metadata:
   namespace: db
   name: minio
   labels:
-    app: minio
-    release: minio
+    app.kubernetes.io/name: minio
+    app.kubernetes.io/instance: minio
 spec:
   updateStrategy:
     type: RollingUpdate
@@ -54,14 +52,13 @@ spec:
   replicas: 4
   selector:
     matchLabels:
-      app: minio
-      release: minio
+      app.kubernetes.io/name: minio
   template:
     metadata:
       name: minio
       labels:
-        app: minio
-        release: minio
+        app.kubernetes.io/name: minio
+        app.kubernetes.io/instance: minio
     spec:
       serviceAccountName: minio
       securityContext:

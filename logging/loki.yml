@@ -6,7 +6,8 @@ metadata:
   name: loki
   namespace: logging
   labels:
-    app: loki
+    app.kubernetes.io/name: loki
+    app.kubernetes.io/instance: loki
 spec:
   ports:
     - port: 3100
@@ -14,7 +15,7 @@ spec:
       name: http-metrics
       targetPort: http-metrics
   selector:
-    app: loki
+    app.kubernetes.io/name: loki
 
 ---
 # Source: loki-stack/charts/loki/templates/statefulset.yaml
@@ -24,23 +25,22 @@ metadata:
   name: loki
   namespace: logging
   labels:
-    app: loki
+    app.kubernetes.io/name: loki
+    app.kubernetes.io/instance: loki
 spec:
   podManagementPolicy: OrderedReady
   replicas: 1
   selector:
     matchLabels:
-      app: loki
-      release: loki
+      app.kubernetes.io/name: loki
   serviceName: loki-headless
   updateStrategy:
     type: RollingUpdate
   template:
     metadata:
       labels:
-        app: loki
-        name: loki
-        release: loki
+        app.kubernetes.io/name: loki
+        app.kubernetes.io/instance: loki
       annotations:
         prometheus.io/port: http-metrics
         prometheus.io/scrape: "true"
@@ -80,7 +80,7 @@ spec:
           resources:
             limits:
               cpu: 200m
-              memory: 50Mi
+              memory: 500Mi
             requests:
               cpu: 100m
               memory: 30Mi
@@ -98,7 +98,8 @@ spec:
   - metadata:
       name: storage
       annotations:
-        app: loki
+        app.kubernetes.io/name: loki
+        app.kubernetes.io/instance: loki
     spec:
       accessModes: [ "ReadWriteOnce" ]
       storageClassName: local-path

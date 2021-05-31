@@ -11,6 +11,7 @@ metadata:
   name: elasticsearch
   labels:
     app.kubernetes.io/name: elasticsearch
+    app.kubernetes.io/instance: elasticsearch
 spec:
   selector:
     app.kubernetes.io/name: elasticsearch
@@ -36,6 +37,7 @@ spec:
     metadata:
       labels:
         app.kubernetes.io/name: elasticsearch
+        app.kubernetes.io/instance: elasticsearch
       annotations:
         fluentbit.io/parser: json
     spec:
@@ -109,6 +111,7 @@ spec:
       name: data
       labels:
         app.kubernetes.io/name: elasticsearch
+        app.kubernetes.io/instance: elasticsearch
     spec:
       accessModes: [ "ReadWriteOnce" ]
       storageClassName: local-path
