@@ -87,6 +87,33 @@ spec:
             value: "1"
           - name: ES_JAVA_OPTS
             value: "-Xms4G -Xmx4G"
+        startupProbe:
+          httpGet:
+            path: /_cluster/health
+            port: 9200
+            scheme: HTTP
+          failureThreshold: 30
+          periodSeconds: 10
+        livenessProbe:
+          httpGet:
+            path: /_cluster/health
+            port: 9200
+            scheme: HTTP
+          initialDelaySeconds: 10
+          periodSeconds: 15
+          timeoutSeconds: 10
+          successThreshold: 1
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /_cluster/health?wait_for_status=green&timeout=120s
+            port: 9200
+            scheme: HTTP
+          initialDelaySeconds: 10
+          periodSeconds: 15
+          timeoutSeconds: 120
+          successThreshold: 1
+          failureThreshold: 3
       initContainers:
       - name: fix-permissions
         image: busybox
