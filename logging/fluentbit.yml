@@ -43,6 +43,16 @@ spec:
           requests:
             cpu: 100m
             memory: 100Mi
+        livenessProbe:
+          httpGet:
+            path: /api/v1/health
+            port: 2020
+            scheme: HTTP
+          initialDelaySeconds: 10
+          periodSeconds: 10
+          timeoutSeconds: 1
+          successThreshold: 1
+          failureThreshold: 5
       terminationGracePeriodSeconds: 10
       volumes:
       - name: varlog

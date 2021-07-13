@@ -129,5 +129,5 @@ spec:
               port: 9000
           readinessProbe:
             httpGet:
-              path: /
+              path: /api/status
               port: 9000

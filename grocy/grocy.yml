@@ -102,6 +102,16 @@ spec:
               mountPath: "/config"
             - name: data
               mountPath: /var/www/data
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+              scheme: HTTP
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 1
+            successThreshold: 1
+            failureThreshold: 5
       volumes:
         - name: data
           persistentVolumeClaim:
