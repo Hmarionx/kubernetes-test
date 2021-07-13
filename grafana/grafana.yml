@@ -62,7 +62,7 @@ spec:
         kubernetes.io/os: linux
         node-role.kubernetes.io/master: "true"
       containers:
-        - image: grafana/grafana:8.0.1
+        - image: grafana/grafana:8.0.5
           name: grafana
           env:
            - name: GF_INSTALL_PLUGINS

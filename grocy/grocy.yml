@@ -82,7 +82,7 @@ spec:
       containers:
         - name: grocy
           imagePullPolicy: Always
-          image: ghcr.io/linuxserver/grocy:arm64v8-latest
+          image: ghcr.io/linuxserver/grocy:arm64v8-version-v3.0.1
           resources:
             limits:
               memory: "256Mi"

@@ -279,7 +279,7 @@ spec:
       serviceAccountName: prometheus-pushgateway
       containers:
         - name: prometheus-pushgateway
-          image: "quay.io/prometheus/pushgateway:v1.4.0"
+          image: "quay.io/prometheus/pushgateway:v1.4.1"
           imagePullPolicy: "IfNotPresent"
           ports:
             - containerPort: 9091
@@ -336,7 +336,7 @@ spec:
       containers:
 
         - name: prometheus-server
-          image: "quay.io/prometheus/prometheus:v2.26.0"
+          image: "quay.io/prometheus/prometheus:v2.28.1"
           imagePullPolicy: "IfNotPresent"
           args:
             - --storage.tsdb.retention.time=7d
