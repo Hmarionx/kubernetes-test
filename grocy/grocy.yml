@@ -102,12 +102,24 @@ spec:
               mountPath: "/config"
             - name: data
               mountPath: /var/www/data
+          startupProbe:
+            httpGet:
+              path: /
+              port: 80
+              scheme: HTTP
+            failureThreshold: 30
+            periodSeconds: 10
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+              scheme: HTTP
           livenessProbe:
             httpGet:
               path: /
               port: 80
               scheme: HTTP
-            initialDelaySeconds: 30
+            initialDelaySeconds: 10
             periodSeconds: 10
             timeoutSeconds: 1
             successThreshold: 1

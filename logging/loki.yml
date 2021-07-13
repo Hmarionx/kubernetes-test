@@ -67,16 +67,33 @@ spec:
             - name: http-metrics
               containerPort: 3100
               protocol: TCP
-          livenessProbe:
+          startupProbe:
             httpGet:
               path: /ready
               port: http-metrics
-            initialDelaySeconds: 45
+              scheme: HTTP
+            failureThreshold: 30
+            periodSeconds: 10
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http-metrics
+              scheme: HTTP
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 1
+            successThreshold: 1
+            failureThreshold: 5
           readinessProbe:
             httpGet:
               path: /ready
               port: http-metrics
-            initialDelaySeconds: 45
+              scheme: HTTP
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 1
+            successThreshold: 1
+            failureThreshold: 3
           resources:
             limits:
               cpu: 200m

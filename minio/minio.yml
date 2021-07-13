@@ -97,24 +97,31 @@ spec:
           resources:
             requests:
               memory: 1Gi
+          startupProbe:
+            httpGet:
+              path: /minio/health/live
+              port: http
+              scheme: HTTP
+            failureThreshold: 30
+            periodSeconds: 10
           livenessProbe:
             httpGet:
               path: /minio/health/live
-              port: 9000
+              port: http
               scheme: HTTP
-            initialDelaySeconds: 120
-            periodSeconds: 15
-            timeoutSeconds: 10
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 1
             successThreshold: 1
-            failureThreshold: 3
+            failureThreshold: 5
           readinessProbe:
             httpGet:
               path: /minio/health/cluster
-              port: 9000
+              port: http
               scheme: HTTP
-            initialDelaySeconds: 120
-            periodSeconds: 15
-            timeoutSeconds: 10
+            initialDelaySeconds: 10
+            periodSeconds: 10
+            timeoutSeconds: 1
             successThreshold: 1
             failureThreshold: 3
       nodeSelector:
