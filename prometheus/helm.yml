@@ -179,7 +179,8 @@ nodeExporter:
 
   ## Annotations to be added to node-exporter pods
   ##
-  podAnnotations: {}
+  podAnnotations:
+    fluentbit.io/parser: logfmt
 
   ## Labels to be added to node-exporter pods
   ##
@@ -828,7 +829,8 @@ pushgateway:
 
   ## Annotations to be added to pushgateway pods
   ##
-  podAnnotations: {}
+  podAnnotations:
+    fluentbit.io/parser: logfmt
 
   ## Labels to be added to pushgateway pods
   ##

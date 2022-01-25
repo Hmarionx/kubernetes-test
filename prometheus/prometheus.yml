@@ -147,6 +147,8 @@ spec:
     type: RollingUpdate
   template:
     metadata:
+      annotations:
+        fluentbit.io/parser: logfmt
       labels:
         component: "node-exporter"
         app: prometheus
@@ -293,6 +295,8 @@ spec:
   replicas: 1
   template:
     metadata:
+      annotations:
+        fluentbit.io/parser: logfmt
       labels:
         component: "pushgateway"
         app: prometheus
