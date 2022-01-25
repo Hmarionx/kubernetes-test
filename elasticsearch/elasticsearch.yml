@@ -28,6 +28,7 @@ metadata:
   namespace: db
   name: es-cluster
 spec:
+  podManagementPolicy: Parallel
   serviceName: elasticsearch
   replicas: 2
   selector:
@@ -48,15 +49,12 @@ spec:
         podAntiAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:
           - labelSelector:
-              matchExpressions:
-                - key: "app.kubernetes.io/name"
-                  operator: In
-                  values:
-                  - elasticsearch
+              matchLabels:
+                app.kubernetes.io/name: elasticsearch
             topologyKey: "kubernetes.io/hostname"
       containers:
       - name: elasticsearch
-        image: docker.elastic.co/elasticsearch/elasticsearch:7.13.3
+        image: docker.elastic.co/elasticsearch/elasticsearch:7.16.3
         resources:
             limits:
               cpu: 1000m
@@ -92,7 +90,7 @@ spec:
             path: /_cluster/health
             port: 9200
             scheme: HTTP
-          failureThreshold: 30
+          failureThreshold: 10
           periodSeconds: 10
         livenessProbe:
           httpGet:
@@ -103,7 +101,7 @@ spec:
           periodSeconds: 15
           timeoutSeconds: 10
           successThreshold: 1
-          failureThreshold: 3
+          failureThreshold: 10
         readinessProbe:
           httpGet:
             path: /_cluster/health?wait_for_status=green&timeout=120s
@@ -113,7 +111,7 @@ spec:
           periodSeconds: 15
           timeoutSeconds: 120
           successThreshold: 1
-          failureThreshold: 3
+          failureThreshold: 10
       initContainers:
       - name: fix-permissions
         image: busybox
