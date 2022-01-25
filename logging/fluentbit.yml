@@ -6,11 +6,14 @@ metadata:
   labels:
     app.kubernetes.io/name: fluent-bit
     app.kubernetes.io/instance: fluent-bit
+    app.kubernetes.io/version: v1
     kubernetes.io/cluster-service: "true"
 spec:
   selector:
     matchLabels:
       app.kubernetes.io/name: fluent-bit
+      app.kubernetes.io/instance: fluent-bit
+      app.kubernetes.io/version: v1
   template:
     metadata:
       labels:
@@ -25,7 +28,7 @@ spec:
     spec:
       containers:
       - name: fluent-bit
-        image: fluent/fluent-bit:1.8.1
+        image: fluent/fluent-bit:1.8
         imagePullPolicy: IfNotPresent
         ports:
           - containerPort: 2020
@@ -65,3 +68,11 @@ spec:
         configMap:
           name: fluent-bit-config
       serviceAccountName: fluent-bit
+      tolerations:
+      - key: node-role.kubernetes.io/master
+        operator: Exists
+        effect: NoSchedule
+      - operator: "Exists"
+        effect: "NoExecute"
+      - operator: "Exists"
+        effect: "NoSchedule"
