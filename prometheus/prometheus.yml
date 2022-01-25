@@ -6,7 +6,13 @@ metadata:
   name: kube-state-metrics
   namespace: monitoring
   labels:
+    helm.sh/chart: kube-state-metrics-4.0.2
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: metrics
+    app.kubernetes.io/part-of: kube-state-metrics
     app.kubernetes.io/name: kube-state-metrics
+    app.kubernetes.io/instance: 15.0.4
+    app.kubernetes.io/version: "2.2.4"
   annotations:
     prometheus.io/scrape: 'true'
 spec:
@@ -19,6 +25,7 @@ spec:
 
   selector:
     app.kubernetes.io/name: kube-state-metrics
+    app.kubernetes.io/instance: 15.0.4
 ---
 # Source: prometheus/templates/node-exporter/svc.yaml
 apiVersion: v1
@@ -27,8 +34,11 @@ metadata:
   annotations:
     prometheus.io/scrape: "true"
   labels:
-    app.kubernetes.io/component: node-exporter
-    app.kubernetes.io/name: prometheus
+    component: "node-exporter"
+    app: prometheus
+    release: 15.0.4
+    chart: prometheus-15.0.4
+    heritage: Helm
   name: prometheus-node-exporter
   namespace: monitoring
 spec:
@@ -39,8 +49,9 @@ spec:
       protocol: TCP
       targetPort: 9100
   selector:
-    app.kubernetes.io/component: node-exporter
-    app.kubernetes.io/name: prometheus
+    component: "node-exporter"
+    app: prometheus
+    release: 15.0.4
   type: "ClusterIP"
 ---
 # Source: prometheus/templates/pushgateway/service.yaml
@@ -50,8 +61,11 @@ metadata:
   annotations:
     prometheus.io/probe: pushgateway
   labels:
-    app.kubernetes.io/component: pushgateway
-    app.kubernetes.io/name: prometheus
+    component: "pushgateway"
+    app: prometheus
+    release: 15.0.4
+    chart: prometheus-15.0.4
+    heritage: Helm
   name: prometheus-pushgateway
   namespace: monitoring
 spec:
@@ -61,8 +75,9 @@ spec:
       protocol: TCP
       targetPort: 9091
   selector:
-    app.kubernetes.io/component: pushgateway
-    app.kubernetes.io/name: prometheus
+    component: "pushgateway"
+    app: prometheus
+    release: 15.0.4
   type: "ClusterIP"
 ---
 # Source: prometheus/templates/server/service.yaml
@@ -70,8 +85,11 @@ apiVersion: v1
 kind: Service
 metadata:
   labels:
-    app.kubernetes.io/component: server
-    app.kubernetes.io/name: prometheus
+    component: "server"
+    app: prometheus
+    release: 15.0.4
+    chart: prometheus-15.0.4
+    heritage: Helm
   name: prometheus-server
   namespace: monitoring
 spec:
@@ -81,8 +99,9 @@ spec:
       protocol: TCP
       targetPort: 9090
   selector:
-    app.kubernetes.io/component: server
-    app.kubernetes.io/name: prometheus
+    component: "server"
+    app: prometheus
+    release: 15.0.4
   sessionAffinity: None
   type: "ClusterIP"
 ---
@@ -91,8 +110,11 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   labels:
-    app.kubernetes.io/component: server
-    app.kubernetes.io/name: prometheus
+    component: "server"
+    app: prometheus
+    release: 15.0.4
+    chart: prometheus-15.0.4
+    heritage: Helm
   name: prometheus-server
   namespace: monitoring
 spec:
@@ -108,27 +130,34 @@ apiVersion: apps/v1
 kind: DaemonSet
 metadata:
   labels:
-    app.kubernetes.io/component: node-exporter
-    app.kubernetes.io/name: prometheus
+    component: "node-exporter"
+    app: prometheus
+    release: 15.0.4
+    chart: prometheus-15.0.4
+    heritage: Helm
   name: prometheus-node-exporter
   namespace: monitoring
 spec:
   selector:
     matchLabels:
-      app.kubernetes.io/component: node-exporter
-      app.kubernetes.io/name: prometheus
+      component: "node-exporter"
+      app: prometheus
+      release: 15.0.4
   updateStrategy:
     type: RollingUpdate
   template:
     metadata:
       labels:
-        app.kubernetes.io/component: node-exporter
-        app.kubernetes.io/name: prometheus
+        component: "node-exporter"
+        app: prometheus
+        release: 15.0.4
+        chart: prometheus-15.0.4
+        heritage: Helm
     spec:
       serviceAccountName: prometheus-node-exporter
       containers:
         - name: prometheus-node-exporter
-          image: "quay.io/prometheus/node-exporter:v1.1.2"
+          image: "quay.io/prometheus/node-exporter:v1.3.0"
           imagePullPolicy: "IfNotPresent"
           args:
             - --path.procfs=/host/proc
@@ -182,17 +211,29 @@ metadata:
   name: kube-state-metrics
   namespace: monitoring
   labels:
+    helm.sh/chart: kube-state-metrics-4.0.2
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: metrics
+    app.kubernetes.io/part-of: kube-state-metrics
     app.kubernetes.io/name: kube-state-metrics
-    app.kubernetes.io/version: "1.9.8"
+    app.kubernetes.io/instance: 15.0.4
+    app.kubernetes.io/version: "2.2.4"
 spec:
   selector:
     matchLabels:
       app.kubernetes.io/name: kube-state-metrics
+      app.kubernetes.io/instance: 15.0.4
   replicas: 1
   template:
     metadata:
       labels:
+        helm.sh/chart: kube-state-metrics-4.0.2
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/component: metrics
+        app.kubernetes.io/part-of: kube-state-metrics
         app.kubernetes.io/name: kube-state-metrics
+        app.kubernetes.io/instance: 15.0.4
+        app.kubernetes.io/version: "2.2.4"
     spec:
       hostNetwork: false
       serviceAccountName: kube-state-metrics
@@ -203,45 +244,14 @@ spec:
       containers:
       - name: kube-state-metrics
         args:
-        - --collectors=certificatesigningrequests
-        - --collectors=configmaps
-        - --collectors=cronjobs
-        - --collectors=daemonsets
-        - --collectors=deployments
-        - --collectors=endpoints
-        - --collectors=horizontalpodautoscalers
-        - --collectors=ingresses
-        - --collectors=jobs
-        - --collectors=limitranges
-        - --collectors=mutatingwebhookconfigurations
-        - --collectors=namespaces
-        - --collectors=networkpolicies
-        - --collectors=nodes
-        - --collectors=persistentvolumeclaims
-        - --collectors=persistentvolumes
-        - --collectors=poddisruptionbudgets
-        - --collectors=pods
-        - --collectors=replicasets
-        - --collectors=replicationcontrollers
-        - --collectors=resourcequotas
-        - --collectors=secrets
-        - --collectors=services
-        - --collectors=statefulsets
-        - --collectors=storageclasses
-        - --collectors=validatingwebhookconfigurations
-        - --collectors=volumeattachments
+        - --port=8080
+        - --resources=certificatesigningrequests,configmaps,cronjobs,daemonsets,deployments,endpoints,horizontalpodautoscalers,ingresses,jobs,limitranges,mutatingwebhookconfigurations,namespaces,networkpolicies,nodes,persistentvolumeclaims,persistentvolumes,poddisruptionbudgets,pods,replicasets,replicationcontrollers,resourcequotas,secrets,services,statefulsets,storageclasses,validatingwebhookconfigurations,volumeattachments
         - --telemetry-port=8081
         imagePullPolicy: IfNotPresent
-        image: "k8s.gcr.io/kube-state-metrics/kube-state-metrics:v1.9.8"
-        resources:
-          limits:
-            cpu: 200m
-            memory: 50Mi
-          requests:
-            cpu: 100m
-            memory: 30Mi
+        image: "k8s.gcr.io/kube-state-metrics/kube-state-metrics:v2.2.4"
         ports:
         - containerPort: 8080
+          name: "http"
         livenessProbe:
           httpGet:
             path: /healthz
@@ -254,33 +264,48 @@ spec:
             port: 8080
           initialDelaySeconds: 5
           timeoutSeconds: 5
+        resources:
+          limits:
+            cpu: 100m
+            memory: 64Mi
+          requests:
+            cpu: 10m
+            memory: 32Mi
 ---
 # Source: prometheus/templates/pushgateway/deploy.yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app.kubernetes.io/component: pushgateway
-    app.kubernetes.io/name: prometheus
+    component: "pushgateway"
+    app: prometheus
+    release: 15.0.4
+    chart: prometheus-15.0.4
+    heritage: Helm
   name: prometheus-pushgateway
   namespace: monitoring
 spec:
   selector:
     matchLabels:
-      app.kubernetes.io/component: pushgateway
-      app.kubernetes.io/name: prometheus
+      component: "pushgateway"
+      app: prometheus
+      release: 15.0.4
   replicas: 1
   template:
     metadata:
       labels:
-        app.kubernetes.io/component: pushgateway
-        app.kubernetes.io/name: prometheus
+        component: "pushgateway"
+        app: prometheus
+        release: 15.0.4
+        chart: prometheus-15.0.4
+        heritage: Helm
     spec:
       serviceAccountName: prometheus-pushgateway
       containers:
         - name: prometheus-pushgateway
-          image: "quay.io/prometheus/pushgateway:v1.4.1"
+          image: "prom/pushgateway:v1.4.2"
           imagePullPolicy: "IfNotPresent"
+          args:
           ports:
             - containerPort: 9091
           livenessProbe:
@@ -302,9 +327,6 @@ spec:
             requests:
               cpu: 10m
               memory: 32Mi
-      nodeSelector:
-        kubernetes.io/os: linux
-        node-role.kubernetes.io/master: "true"
       securityContext:
         runAsNonRoot: true
         runAsUser: 65534
@@ -314,32 +336,40 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    app.kubernetes.io/component: server
-    app.kubernetes.io/name: prometheus
+    component: "server"
+    app: prometheus
+    release: 15.0.4
+    chart: prometheus-15.0.4
+    heritage: Helm
   name: prometheus-server
   namespace: monitoring
 spec:
   selector:
     matchLabels:
-      app.kubernetes.io/component: server
-      app.kubernetes.io/name: prometheus
+      component: "server"
+      app: prometheus
+      release: 15.0.4
   replicas: 1
   template:
     metadata:
-      labels:
-        app.kubernetes.io/component: server
-        app.kubernetes.io/name: prometheus
       annotations:
         fluentbit.io/parser: logfmt
+      labels:
+        component: "server"
+        app: prometheus
+        release: 15.0.4
+        chart: prometheus-15.0.4
+        heritage: Helm
     spec:
+      enableServiceLinks: true
       serviceAccountName: prometheus-server
       containers:
 
         - name: prometheus-server
-          image: "quay.io/prometheus/prometheus:v2.28.1"
+          image: "quay.io/prometheus/prometheus:v2.31.1"
           imagePullPolicy: "IfNotPresent"
           args:
-            - --storage.tsdb.retention.time=7d
+            - --storage.tsdb.retention.time=15d
             - --config.file=/etc/config/prometheus.yml
             - --storage.tsdb.path=/data
             - --web.console.libraries=/etc/prometheus/console_libraries
@@ -351,6 +381,7 @@ spec:
             httpGet:
               path: /-/ready
               port: 9090
+              scheme: HTTP
             initialDelaySeconds: 30
             periodSeconds: 5
             timeoutSeconds: 4
@@ -360,6 +391,7 @@ spec:
             httpGet:
               path: /-/healthy
               port: 9090
+              scheme: HTTP
             initialDelaySeconds: 30
             periodSeconds: 15
             timeoutSeconds: 10

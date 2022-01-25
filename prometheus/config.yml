@@ -3,9 +3,11 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   labels:
-    app.kubernetes.io/name: prometheus
-    app.kubernetes.io/instance: prometheus
-    app.kubernetes.io/component: server
+    component: "server"
+    app: prometheus
+    release: 15.0.4
+    chart: prometheus-15.0.4
+    heritage: Helm
   name: prometheus-server
   namespace: monitoring
 data:
