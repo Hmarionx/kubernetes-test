@@ -109,16 +109,14 @@ data:
 
   output-loki.conf: |
     [OUTPUT]
-        Name                   loki
-        Match                  kube.*
+        name                   loki
+        match                  kube.*
         host                   loki.logging.svc.cluster.local
         port                   3100
         labels                 job=fluentbit
         label_keys             $kubernetes['namespace_name'],$kubernetes['pod_name'],$kubernetes['host']
-        auto_kubernetes_labels On
-        Logstash_Format        On
-        Replace_Dots           On
-        Retry_Limit            False
+        auto_kubernetes_labels on
+
 
   parsers.conf: |
     [PARSER]
