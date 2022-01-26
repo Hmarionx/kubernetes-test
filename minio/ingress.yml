@@ -1,14 +1,18 @@
+# Source: minio/templates/ingress.yaml
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: ingress-minio
-  namespace: db
-  annotations:
-    kubernetes.io/ingress.class: "nginx"
+  name: minio
+  namespace: "db"
+  labels:
+    app: minio
+    chart: minio-3.4.7
+    release: minio
+    heritage: Helm
 spec:
+  ingressClassName: nginx
   rules:
-    - host: minio.lan.repe.re
-      http:
+    - http:
         paths:
           - path: /
             pathType: Prefix
@@ -17,3 +21,30 @@ spec:
                 name: minio
                 port:
                   number: 9000
+      host: "s3.lan.repe.re"
+
+---
+# Source: minio/templates/console-ingress.yaml
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: minio-console
+  namespace: "db"
+  labels:
+    app: minio
+    chart: minio-3.4.7
+    release: minio
+    heritage: Helm
+spec:
+  ingressClassName: nginx
+  rules:
+    - http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: minio-console
+                port:
+                  number: 9001
+      host: "minio.lan.repe.re"
