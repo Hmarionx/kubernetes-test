@@ -1,17 +1,23 @@
+# Source: elasticsearch/templates/ingress.yaml
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: elasticsearch
   namespace: db
+  name: es-cluster-master
+  labels:
+    app: elasticsearch
+    release: elasticsearch
+    heritage: Helm
 spec:
+  ingressClassName: "nginx"
   rules:
-    - host: elasticsearch.lan.repe.re
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: elasticsearch
-                port:
-                  number: 9200
+  - host: es.lan.repe.re
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: es-cluster-master
+            port:
+              number: 9200
