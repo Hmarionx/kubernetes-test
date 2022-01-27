@@ -74,7 +74,7 @@ podAnnotations:
 # additionals labels
 labels: {}
 
-esJavaOpts: "-Xmx2g -Xms2g"
+esJavaOpts: "-Xmx4g -Xms4g"
 
 resources:
   requests:
@@ -155,6 +155,7 @@ extraInitContainers:
     image: busybox
     command: ["sh", "-c", "chown -R 1000:1000 /usr/share/elasticsearch/data"]
     securityContext:
+      runAsUser: 0
       privileged: true
     volumeMounts:
     - name: es-cluster-master
@@ -164,9 +165,6 @@ extraInitContainers:
     command: ["sh", "-c", "ulimit -n 65536"]
     securityContext:
       privileged: true
-  # - name: do-something
-  #   image: busybox
-  #   command: ['do', 'something']
 
 # This is the PriorityClass settings as defined in
 # https://kubernetes.io/docs/concepts/configuration/pod-priority-preemption/#priorityclass
@@ -272,7 +270,7 @@ ingress:
   #    hosts:
   #      - chart-example.local
 
-nameOverride: "es-cluster"
+nameOverride: "es-cluster2"
 fullnameOverride: ""
 healthNameOverride: ""
 

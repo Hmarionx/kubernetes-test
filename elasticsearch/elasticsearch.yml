@@ -144,11 +144,11 @@ spec:
         image: busybox
         name: fix-permissions
         securityContext:
-          runAsUser: 0
           privileged: true
+          runAsUser: 0
         volumeMounts:
-          - name: "es-cluster-master"
-            mountPath: /usr/share/elasticsearch/data
+        - mountPath: /usr/share/elasticsearch/data
+          name: es-cluster-master
       - command:
         - sh
         - -c
@@ -259,7 +259,7 @@ spec:
           - name: cluster.deprecation_indexing.enabled
             value: "false"
           - name: ES_JAVA_OPTS
-            value: "-Xmx2g -Xms2g"
+            value: "-Xmx4g -Xms4g"
           - name: node.data
             value: "true"
           - name: node.ingest
