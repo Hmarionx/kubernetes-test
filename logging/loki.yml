@@ -96,11 +96,10 @@ spec:
             failureThreshold: 3
           resources:
             limits:
-              cpu: 200m
               memory: 500Mi
             requests:
-              cpu: 100m
-              memory: 30Mi
+              cpu: 10m
+              memory: 60Mi
           securityContext:
             readOnlyRootFilesystem: true
       nodeSelector:

@@ -136,8 +136,11 @@ spec:
             - name: MINIO_PROMETHEUS_AUTH_TYPE
               value: "public"
           resources:
-            requests:
+            limits:
               memory: 1Gi
+            requests:
+              cpu: 100m
+              memory: 500Mi
           startupProbe:
             httpGet:
               path: /minio/health/live
