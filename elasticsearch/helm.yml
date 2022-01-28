@@ -78,10 +78,9 @@ esJavaOpts: "-Xmx4g -Xms4g"
 
 resources:
   requests:
-    cpu: "1000m"
+    cpu: "100m"
     memory: "4Gi"
   limits:
-    cpu: "1000m"
     memory: "6Gi"
 
 initResources:

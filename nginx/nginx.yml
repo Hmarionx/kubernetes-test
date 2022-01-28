@@ -196,11 +196,10 @@ spec:
               readOnly: true
           resources:
             limits:
-              cpu: 500m
               memory: 500Mi
             requests:
               cpu: 100m
-              memory: 90Mi
+              memory: 150Mi
       nodeSelector:
         kubernetes.io/os: linux
         node-role.kubernetes.io/master: "true"
