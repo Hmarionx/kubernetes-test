@@ -8,13 +8,13 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   labels:
-    helm.sh/chart: kube-state-metrics-4.0.2
+    helm.sh/chart: kube-state-metrics-4.7.0
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: metrics
     app.kubernetes.io/part-of: kube-state-metrics
     app.kubernetes.io/name: kube-state-metrics
-    app.kubernetes.io/instance: 15.0.4
-    app.kubernetes.io/version: "2.2.4"
+    app.kubernetes.io/instance: 15.8.5
+    app.kubernetes.io/version: "2.4.1"
   name: kube-state-metrics
   namespace: monitoring
 imagePullSecrets:
@@ -27,8 +27,8 @@ metadata:
   labels:
     component: "node-exporter"
     app: prometheus
-    release: 15.0.4
-    chart: prometheus-15.0.4
+    release: 15.8.5
+    chart: prometheus-15.8.5
     heritage: Helm
   name: prometheus-node-exporter
   namespace: monitoring
@@ -42,8 +42,8 @@ metadata:
   labels:
     component: "pushgateway"
     app: prometheus
-    release: 15.0.4
-    chart: prometheus-15.0.4
+    release: 15.8.5
+    chart: prometheus-15.8.5
     heritage: Helm
   name: prometheus-pushgateway
   namespace: monitoring
@@ -57,8 +57,8 @@ metadata:
   labels:
     component: "server"
     app: prometheus
-    release: 15.0.4
-    chart: prometheus-15.0.4
+    release: 15.8.5
+    chart: prometheus-15.8.5
     heritage: Helm
   name: prometheus-server
   namespace: monitoring
@@ -70,13 +70,13 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   labels:
-    app.kubernetes.io/name: kube-state-metrics
-    app.kubernetes.io/instance: 15.0.4
-    app.kubernetes.io/component: metrics
+    helm.sh/chart: kube-state-metrics-4.7.0
     app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/version: "4.0.2"
+    app.kubernetes.io/component: metrics
     app.kubernetes.io/part-of: kube-state-metrics
-    helm.sh/chart: kube-state-metrics-4.0.2
+    app.kubernetes.io/name: kube-state-metrics
+    app.kubernetes.io/instance: 15.8.5
+    app.kubernetes.io/version: "2.4.1"
   name: kube-state-metrics
 rules:
 
@@ -222,8 +222,8 @@ metadata:
   labels:
     component: "pushgateway"
     app: prometheus
-    release: 15.0.4
-    chart: prometheus-15.0.4
+    release: 15.8.5
+    chart: prometheus-15.8.5
     heritage: Helm
   name: prometheus-pushgateway
 rules:
@@ -236,8 +236,8 @@ metadata:
   labels:
     component: "server"
     app: prometheus
-    release: 15.0.4
-    chart: prometheus-15.0.4
+    release: 15.8.5
+    chart: prometheus-15.8.5
     heritage: Helm
   name: prometheus-server
 rules:
@@ -276,13 +276,13 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   labels:
-    helm.sh/chart: kube-state-metrics-4.0.2
+    helm.sh/chart: kube-state-metrics-4.7.0
     app.kubernetes.io/managed-by: Helm
     app.kubernetes.io/component: metrics
     app.kubernetes.io/part-of: kube-state-metrics
     app.kubernetes.io/name: kube-state-metrics
-    app.kubernetes.io/instance: 15.0.4
-    app.kubernetes.io/version: "2.2.4"
+    app.kubernetes.io/instance: 15.8.5
+    app.kubernetes.io/version: "2.4.1"
   name: kube-state-metrics
 roleRef:
   apiGroup: rbac.authorization.k8s.io
@@ -300,8 +300,8 @@ metadata:
   labels:
     component: "pushgateway"
     app: prometheus
-    release: 15.0.4
-    chart: prometheus-15.0.4
+    release: 15.8.5
+    chart: prometheus-15.8.5
     heritage: Helm
   name: prometheus-pushgateway
 subjects:
@@ -320,8 +320,8 @@ metadata:
   labels:
     component: "server"
     app: prometheus
-    release: 15.0.4
-    chart: prometheus-15.0.4
+    release: 15.8.5
+    chart: prometheus-15.8.5
     heritage: Helm
   name: prometheus-server
 subjects:

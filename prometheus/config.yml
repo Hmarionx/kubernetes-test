@@ -5,8 +5,8 @@ metadata:
   labels:
     component: "server"
     app: prometheus
-    release: 15.0.4
-    chart: prometheus-15.0.4
+    release: 15.8.5
+    chart: prometheus-15.8.5
     heritage: Helm
   name: prometheus-server
   namespace: monitoring
