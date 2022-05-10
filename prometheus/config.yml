@@ -335,7 +335,7 @@ data:
           )
         record: node_namespace_pod_container:container_memory_swap
       - expr: |-
-          kube_pod_container_resource_requests{resource="memory",job="kubernetes-service-endpoints", kubernetes_name="kube-state-metrics"}  * on (namespace, pod, cluster)
+          kube_pod_container_resource_requests{resource="memory",job="kubernetes-service-endpoints", app_kubernetes_io_name="kube-state-metrics"}  * on (namespace, pod, cluster)
           group_left() max by (namespace, pod, cluster) (
             (kube_pod_status_phase{phase=~"Pending|Running"} == 1)
           )
@@ -344,7 +344,7 @@ data:
           sum by (namespace, cluster) (
               sum by (namespace, pod, cluster) (
                   max by (namespace, pod, container, cluster) (
-                    kube_pod_container_resource_requests{resource="memory",job="kubernetes-service-endpoints", kubernetes_name="kube-state-metrics"}
+                    kube_pod_container_resource_requests{resource="memory",job="kubernetes-service-endpoints", app_kubernetes_io_name="kube-state-metrics"}
                   ) * on(namespace, pod, cluster) group_left() max by (namespace, pod, cluster) (
                     kube_pod_status_phase{phase=~"Pending|Running"} == 1
                   )
@@ -352,7 +352,7 @@ data:
           )
         record: namespace_memory:kube_pod_container_resource_requests:sum
       - expr: |-
-          kube_pod_container_resource_requests{resource="cpu",job="kubernetes-service-endpoints", kubernetes_name="kube-state-metrics"}  * on (namespace, pod, cluster)
+          kube_pod_container_resource_requests{resource="cpu",job="kubernetes-service-endpoints", app_kubernetes_io_name="kube-state-metrics"}  * on (namespace, pod, cluster)
           group_left() max by (namespace, pod, cluster) (
             (kube_pod_status_phase{phase=~"Pending|Running"} == 1)
           )
@@ -361,7 +361,7 @@ data:
           sum by (namespace, cluster) (
               sum by (namespace, pod, cluster) (
                   max by (namespace, pod, container, cluster) (
-                    kube_pod_container_resource_requests{resource="cpu",job="kubernetes-service-endpoints", kubernetes_name="kube-state-metrics"}
+                    kube_pod_container_resource_requests{resource="cpu",job="kubernetes-service-endpoints", app_kubernetes_io_name="kube-state-metrics"}
                   ) * on(namespace, pod, cluster) group_left() max by (namespace, pod, cluster) (
                     kube_pod_status_phase{phase=~"Pending|Running"} == 1
                   )
@@ -369,7 +369,7 @@ data:
           )
         record: namespace_cpu:kube_pod_container_resource_requests:sum
       - expr: |-
-          kube_pod_container_resource_limits{resource="memory",job="kubernetes-service-endpoints", kubernetes_name="kube-state-metrics"}  * on (namespace, pod, cluster)
+          kube_pod_container_resource_limits{resource="memory",job="kubernetes-service-endpoints", app_kubernetes_io_name="kube-state-metrics"}  * on (namespace, pod, cluster)
           group_left() max by (namespace, pod, cluster) (
             (kube_pod_status_phase{phase=~"Pending|Running"} == 1)
           )
@@ -378,7 +378,7 @@ data:
           sum by (namespace, cluster) (
               sum by (namespace, pod, cluster) (
                   max by (namespace, pod, container, cluster) (
-                    kube_pod_container_resource_limits{resource="memory",job="kubernetes-service-endpoints", kubernetes_name="kube-state-metrics"}
+                    kube_pod_container_resource_limits{resource="memory",job="kubernetes-service-endpoints", app_kubernetes_io_name="kube-state-metrics"}
                   ) * on(namespace, pod, cluster) group_left() max by (namespace, pod, cluster) (
                     kube_pod_status_phase{phase=~"Pending|Running"} == 1
                   )
@@ -386,7 +386,7 @@ data:
           )
         record: namespace_memory:kube_pod_container_resource_limits:sum
       - expr: |-
-          kube_pod_container_resource_limits{resource="cpu",job="kubernetes-service-endpoints", kubernetes_name="kube-state-metrics"}  * on (namespace, pod, cluster)
+          kube_pod_container_resource_limits{resource="cpu",job="kubernetes-service-endpoints", app_kubernetes_io_name="kube-state-metrics"}  * on (namespace, pod, cluster)
           group_left() max by (namespace, pod, cluster) (
           (kube_pod_status_phase{phase=~"Pending|Running"} == 1)
           )
@@ -395,7 +395,7 @@ data:
           sum by (namespace, cluster) (
               sum by (namespace, pod, cluster) (
                   max by (namespace, pod, container, cluster) (
-                    kube_pod_container_resource_limits{resource="cpu",job="kubernetes-service-endpoints", kubernetes_name="kube-state-metrics"}
+                    kube_pod_container_resource_limits{resource="cpu",job="kubernetes-service-endpoints", app_kubernetes_io_name="kube-state-metrics"}
                   ) * on(namespace, pod, cluster) group_left() max by (namespace, pod, cluster) (
                     kube_pod_status_phase{phase=~"Pending|Running"} == 1
                   )
@@ -406,11 +406,11 @@ data:
           max by (cluster, namespace, workload, pod) (
             label_replace(
               label_replace(
-                kube_pod_owner{job="kubernetes-service-endpoints", kubernetes_name="kube-state-metrics", owner_kind="ReplicaSet"},
+                kube_pod_owner{job="kubernetes-service-endpoints", app_kubernetes_io_name="kube-state-metrics", owner_kind="ReplicaSet"},
                 "replicaset", "$1", "owner_name", "(.*)"
               ) * on(replicaset, namespace) group_left(owner_name) topk by(replicaset, namespace) (
                 1, max by (replicaset, namespace, owner_name) (
-                  kube_replicaset_owner{job="kubernetes-service-endpoints", kubernetes_name="kube-state-metrics"}
+                  kube_replicaset_owner{job="kubernetes-service-endpoints", app_kubernetes_io_name="kube-state-metrics"}
                 )
               ),
               "workload", "$1", "owner_name", "(.*)"
@@ -422,7 +422,7 @@ data:
       - expr: |-
           max by (cluster, namespace, workload, pod) (
             label_replace(
-              kube_pod_owner{job="kubernetes-service-endpoints", kubernetes_name="kube-state-metrics", owner_kind="DaemonSet"},
+              kube_pod_owner{job="kubernetes-service-endpoints", app_kubernetes_io_name="kube-state-metrics", owner_kind="DaemonSet"},
               "workload", "$1", "owner_name", "(.*)"
             )
           )
@@ -432,7 +432,7 @@ data:
       - expr: |-
           max by (cluster, namespace, workload, pod) (
             label_replace(
-              kube_pod_owner{job="kubernetes-service-endpoints", kubernetes_name="kube-state-metrics", owner_kind="StatefulSet"},
+              kube_pod_owner{job="kubernetes-service-endpoints", app_kubernetes_io_name="kube-state-metrics", owner_kind="StatefulSet"},
               "workload", "$1", "owner_name", "(.*)"
             )
           )
@@ -442,7 +442,7 @@ data:
       - expr: |-
           max by (cluster, namespace, workload, pod) (
             label_replace(
-              kube_pod_owner{job="kubernetes-service-endpoints", kubernetes_name="kube-state-metrics", owner_kind="Job"},
+              kube_pod_owner{job="kubernetes-service-endpoints", app_kubernetes_io_name="kube-state-metrics", owner_kind="Job"},
               "workload", "$1", "owner_name", "(.*)"
             )
           )
