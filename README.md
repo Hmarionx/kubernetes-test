@@ -18,3 +18,10 @@ helm repo add prometheus-community https://prometheus-community.github.io/helm-c
 helm show values prometheus-community/prometheus
 helm install --dry-run --debug --namespace monitoring --create-namespace 13.6.0 prometheus-community/prometheus
 ```
+
+search and replace for Grafana dashboards:
+
+```
+job=\"kubelet\", metrics_path=\"/metrics/cadvisor\"  ===> job=\"kubernetes-nodes-cadvisor\"
+job=\"kube-state-metrics\"                        ===> job=\"kubernetes-service-endpoints\", service=\"kube-state-metrics\"
+```

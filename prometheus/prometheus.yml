@@ -312,7 +312,6 @@ spec:
         - name: prometheus-pushgateway
           image: "prom/pushgateway:v1.4.2"
           imagePullPolicy: "IfNotPresent"
-          args:
           ports:
             - containerPort: 9091
           livenessProbe:
@@ -374,7 +373,7 @@ spec:
       containers:
 
         - name: prometheus-server
-          image: "quay.io/prometheus/prometheus:v2.31.1"
+          image: "quay.io/prometheus/prometheus:v2.34.0"
           imagePullPolicy: "IfNotPresent"
           args:
             - --storage.tsdb.retention.time=15d
