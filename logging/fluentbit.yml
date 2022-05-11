@@ -29,8 +29,8 @@ spec:
     spec:
       containers:
       - name: fluent-bit
-        image: fluent/fluent-bit:1.8
-        imagePullPolicy: IfNotPresent
+        image: fluent/fluent-bit:1.9
+        imagePullPolicy: Always
         ports:
           - containerPort: 2020
         volumeMounts:
