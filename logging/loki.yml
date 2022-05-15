@@ -1,47 +1,83 @@
 ---
-# Source: loki-stack/charts/loki/templates/service-headless.yaml
+# Source: loki/templates/service-headless.yaml
 apiVersion: v1
 kind: Service
 metadata:
   name: loki-headless
   namespace: logging
   labels:
-    app.kubernetes.io/name: loki
-    app.kubernetes.io/instance: loki
+    app: loki
+    chart: loki-2.11.1
+    release: loki
+    heritage: Helm
+    variant: headless
 spec:
+  clusterIP: None
   ports:
     - port: 3100
       protocol: TCP
       name: http-metrics
       targetPort: http-metrics
   selector:
-    app.kubernetes.io/name: loki
+    app: loki
+    release: loki
+---
+# Source: loki/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: loki
+  namespace: logging
+  labels:
+    app: loki
+    chart: loki-2.11.1
+    release: loki
+    heritage: Helm
+  annotations:
+    {}
+spec:
+  type: ClusterIP
+  ports:
+    - port: 3100
+      protocol: TCP
+      name: http-metrics
+      targetPort: http-metrics
+  selector:
+    app: loki
+    release: loki
 
 ---
-# Source: loki-stack/charts/loki/templates/statefulset.yaml
+# Source: loki/templates/statefulset.yaml
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: loki
   namespace: logging
   labels:
-    app.kubernetes.io/name: loki
-    app.kubernetes.io/instance: loki
+    app: loki
+    chart: loki-2.11.1
+    release: loki
+    heritage: Helm
+  annotations:
+    {}
 spec:
   podManagementPolicy: OrderedReady
   replicas: 1
   selector:
     matchLabels:
-      app.kubernetes.io/name: loki
+      app: loki
+      release: loki
   serviceName: loki-headless
   updateStrategy:
     type: RollingUpdate
   template:
     metadata:
       labels:
-        app.kubernetes.io/name: loki
-        app.kubernetes.io/instance: loki
+        app: loki
+        name: loki
+        release: loki
       annotations:
+        checksum/config: cc776117bb82c5687e93f2321e38e0650acb224120117a7a57b25083d050b2f5
         prometheus.io/port: http-metrics
         prometheus.io/scrape: "true"
         fluentbit.io/parser: logfmt
@@ -52,61 +88,56 @@ spec:
         runAsGroup: 10001
         runAsNonRoot: true
         runAsUser: 10001
+      initContainers:
+        []
       containers:
         - name: loki
-          image: "grafana/loki:2.4.1"
+          image: "grafana/loki:2.5.0"
           imagePullPolicy: IfNotPresent
           args:
             - "-config.file=/etc/loki/loki.yaml"
           volumeMounts:
+            - name: tmp
+              mountPath: /tmp
             - name: config
               mountPath: /etc/loki
             - name: storage
               mountPath: "/data"
+              subPath:
           ports:
             - name: http-metrics
               containerPort: 3100
               protocol: TCP
-          startupProbe:
-            httpGet:
-              path: /ready
-              port: http-metrics
-              scheme: HTTP
-            failureThreshold: 30
-            periodSeconds: 10
           livenessProbe:
             httpGet:
               path: /ready
               port: http-metrics
-              scheme: HTTP
             initialDelaySeconds: 45
-            periodSeconds: 10
-            timeoutSeconds: 1
-            successThreshold: 1
-            failureThreshold: 5
           readinessProbe:
             httpGet:
               path: /ready
               port: http-metrics
-              scheme: HTTP
             initialDelaySeconds: 45
-            periodSeconds: 10
-            timeoutSeconds: 1
-            successThreshold: 1
-            failureThreshold: 3
           resources:
             limits:
               memory: 500Mi
             requests:
               cpu: 10m
-              memory: 60Mi
+              memory: 128Mi
           securityContext:
             readOnlyRootFilesystem: true
+          env:
       nodeSelector:
         kubernetes.io/os: linux
         node-role.kubernetes.io/master: "true"
+      affinity:
+        {}
+      tolerations:
+        []
       terminationGracePeriodSeconds: 4800
       volumes:
+        - name: tmp
+          emptyDir: {}
         - name: config
           configMap:
             name: loki
@@ -114,11 +145,11 @@ spec:
   - metadata:
       name: storage
       annotations:
-        app.kubernetes.io/name: loki
-        app.kubernetes.io/instance: loki
+        {}
     spec:
-      accessModes: [ "ReadWriteOnce" ]
-      storageClassName: local-path
+      accessModes:
+        - ReadWriteOnce
       resources:
         requests:
-          storage: 10Gi
+          storage: "10Gi"
+      storageClassName: local-path

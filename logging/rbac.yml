@@ -4,71 +4,105 @@ metadata:
   name: logging
 
 ---
+# Source: fluent-bit/templates/serviceaccount.yaml
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: fluent-bit
   namespace: logging
+  labels:
+    helm.sh/chart: fluent-bit-0.20.0
+    app.kubernetes.io/name: fluent-bit
+    app.kubernetes.io/instance: fluent-bit
+    app.kubernetes.io/version: "1.9.3"
+    app.kubernetes.io/managed-by: Helm
 
 ---
+# Source: loki/templates/serviceaccount.yaml
 apiVersion: v1
 kind: ServiceAccount
 metadata:
+  labels:
+    app: loki
+    chart: loki-2.11.1
+    heritage: Helm
+    release: loki
+  annotations:
+    {}
   name: loki
   namespace: logging
+automountServiceAccountToken: true
 
 ---
+# Source: fluent-bit/templates/clusterrole.yaml
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: fluent-bit-read
+  name: fluent-bit
+  labels:
+    helm.sh/chart: fluent-bit-0.20.0
+    app.kubernetes.io/name: fluent-bit
+    app.kubernetes.io/instance: fluent-bit
+    app.kubernetes.io/version: "1.9.3"
+    app.kubernetes.io/managed-by: Helm
 rules:
-  - apiGroups: [""]
+  - apiGroups:
+      - ""
     resources:
       - namespaces
       - pods
-    verbs: ["get", "list", "watch"]
-
+    verbs:
+      - get
+      - list
+      - watch
 ---
+# Source: fluent-bit/templates/clusterrolebinding.yaml
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: fluent-bit-read
+  name: fluent-bit
+  labels:
+    helm.sh/chart: fluent-bit-0.20.0
+    app.kubernetes.io/name: fluent-bit
+    app.kubernetes.io/instance: fluent-bit
+    app.kubernetes.io/version: "1.9.3"
+    app.kubernetes.io/managed-by: Helm
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
-  name: fluent-bit-read
+  name: fluent-bit
 subjects:
   - kind: ServiceAccount
     name: fluent-bit
     namespace: logging
-
 ---
+# Source: loki/templates/role.yaml
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   name: loki
   namespace: logging
   labels:
-    app.kubernetes.io/name: loki
-rules:
-  - apiGroups: ["extensions"]
-    resources: ["podsecuritypolicies"]
-    verbs: ["use"]
-    resourceNames: [loki]
-
+    app: loki
+    chart: loki-2.11.1
+    heritage: Helm
+    release: loki
 ---
+# Source: loki/templates/rolebinding.yaml
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: loki
   namespace: logging
   labels:
-    app.kubernetes.io/name: loki
+    app: loki
+    chart: loki-2.11.1
+    heritage: Helm
+    release: loki
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
   name: loki
 subjects:
-  - kind: ServiceAccount
-    name: loki
+- kind: ServiceAccount
+  name: loki
