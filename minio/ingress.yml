@@ -3,12 +3,13 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: minio
-  namespace: "db"
+  namespace: "s3"
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
   labels:
-    app: minio
-    chart: minio-3.4.7
-    release: minio
-    heritage: Helm
+    app.kubernetes.io/name: minio
+    app.kubernetes.io/component: minio
+    app.kubernetes.io/part-of: minio
 spec:
   ingressClassName: nginx
   rules:
@@ -29,12 +30,13 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: minio-console
-  namespace: "db"
+  namespace: "s3"
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
   labels:
-    app: minio
-    chart: minio-3.4.7
-    release: minio
-    heritage: Helm
+    app.kubernetes.io/name: minio-console
+    app.kubernetes.io/component: console
+    app.kubernetes.io/part-of: minio
 spec:
   ingressClassName: nginx
   rules:
