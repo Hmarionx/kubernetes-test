@@ -3,11 +3,9 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   labels:
-    component: "server"
-    app: prometheus
-    release: 15.8.5
-    chart: prometheus-15.8.5
-    heritage: Helm
+    app.kubernetes.io/component: server
+    app.kubernetes.io/name: prometheus-server
+    app.kubernetes.io/part-of: prometheus
   name: prometheus-server
   namespace: monitoring
 spec:

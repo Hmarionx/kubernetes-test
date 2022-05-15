@@ -5,7 +5,7 @@ metadata:
   namespace: monitoring
   labels:
     app.kubernetes.io/name: grafana
-    app.kubernetes.io/instance: grafana
+    app.kubernetes.io/part-of: grafana
 data:
   grafana.ini: |
     [analytics]
@@ -18,7 +18,7 @@ metadata:
   namespace: monitoring
   labels:
     app.kubernetes.io/name: grafana
-    app.kubernetes.io/instance: grafana
+    app.kubernetes.io/part-of: grafana
     grafana_datasource: "1"
 data:
   datasources.yaml: |-
@@ -45,7 +45,7 @@ metadata:
   namespace: monitoring
   labels:
     app.kubernetes.io/name: grafana
-    app.kubernetes.io/instance: grafana
+    app.kubernetes.io/part-of: grafana
 spec:
   selector:
     app.kubernetes.io/name: grafana
@@ -62,7 +62,7 @@ metadata:
   namespace: monitoring
   labels:
     app.kubernetes.io/name: grafana
-    app.kubernetes.io/instance: grafana
+    app.kubernetes.io/part-of: grafana
 spec:
   accessModes:
     - "ReadWriteOnce"
@@ -79,7 +79,7 @@ metadata:
   namespace: monitoring
   labels:
     app.kubernetes.io/name: grafana
-    app.kubernetes.io/instance: grafana
+    app.kubernetes.io/part-of: grafana
 spec:
   strategy:
     rollingUpdate:
@@ -89,12 +89,12 @@ spec:
   selector:
     matchLabels:
       app.kubernetes.io/name: grafana
-      app.kubernetes.io/instance: grafana
+      app.kubernetes.io/part-of: grafana
   template:
     metadata:
       labels:
         app.kubernetes.io/name: grafana
-        app.kubernetes.io/instance: grafana
+        app.kubernetes.io/part-of: grafana
       annotations:
         fluentbit.io/parser: logfmt
     spec:

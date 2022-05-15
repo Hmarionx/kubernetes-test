@@ -6,11 +6,8 @@ metadata:
   name: loki-headless
   namespace: logging
   labels:
-    app: loki
-    chart: loki-2.11.1
-    release: loki
-    heritage: Helm
-    variant: headless
+    app.kubernetes.io/name: loki
+    app.kubernetes.io/part-of: loki
 spec:
   clusterIP: None
   ports:
@@ -19,8 +16,8 @@ spec:
       name: http-metrics
       targetPort: http-metrics
   selector:
-    app: loki
-    release: loki
+    app.kubernetes.io/name: loki
+    app.kubernetes.io/part-of: loki
 ---
 # Source: loki/templates/service.yaml
 apiVersion: v1
@@ -29,10 +26,8 @@ metadata:
   name: loki
   namespace: logging
   labels:
-    app: loki
-    chart: loki-2.11.1
-    release: loki
-    heritage: Helm
+    app.kubernetes.io/name: loki
+    app.kubernetes.io/part-of: loki
   annotations:
     {}
 spec:
@@ -43,8 +38,8 @@ spec:
       name: http-metrics
       targetPort: http-metrics
   selector:
-    app: loki
-    release: loki
+    app.kubernetes.io/name: loki
+    app.kubernetes.io/part-of: loki
 
 ---
 # Source: loki/templates/statefulset.yaml
@@ -54,10 +49,8 @@ metadata:
   name: loki
   namespace: logging
   labels:
-    app: loki
-    chart: loki-2.11.1
-    release: loki
-    heritage: Helm
+    app.kubernetes.io/name: loki
+    app.kubernetes.io/part-of: loki
   annotations:
     {}
 spec:
@@ -65,17 +58,16 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: loki
-      release: loki
+      app.kubernetes.io/name: loki
+      app.kubernetes.io/part-of: loki
   serviceName: loki-headless
   updateStrategy:
     type: RollingUpdate
   template:
     metadata:
       labels:
-        app: loki
-        name: loki
-        release: loki
+        app.kubernetes.io/name: loki
+        app.kubernetes.io/part-of: loki
       annotations:
         checksum/config: cc776117bb82c5687e93f2321e38e0650acb224120117a7a57b25083d050b2f5
         prometheus.io/port: http-metrics

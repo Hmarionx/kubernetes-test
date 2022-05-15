@@ -185,7 +185,9 @@ nodeExporter:
   ## Labels to be added to node-exporter pods
   ##
   pod:
-    labels: {}
+    labels:
+      app.kubernetes.io/name: node-exporter
+      app.kubernetes.io/part-of: prometheus
 
   ## PodDisruptionBudget settings
   ## ref: https://kubernetes.io/docs/concepts/workloads/pods/disruptions/
@@ -231,7 +233,9 @@ nodeExporter:
   service:
     annotations:
       prometheus.io/scrape: "true"
-    labels: {}
+    labels:
+      app.kubernetes.io/name: node-exporter
+      app.kubernetes.io/part-of: prometheus
 
     # Exposed as a headless service:
     # https://kubernetes.io/docs/concepts/services-networking/service/#headless-services
@@ -443,7 +447,9 @@ server:
 
     ## Prometheus server Ingress additional labels
     ##
-    extraLabels: {}
+    extraLabels:
+      app.kubernetes.io/name: prometheus
+      app.kubernetes.io/part-of: prometheus
 
     ## Prometheus server Ingress hostnames with optional path
     ## Must be provided if Ingress is enabled
@@ -589,7 +595,9 @@ server:
 
   ## Labels to be added to Prometheus server pods
   ##
-  podLabels: {}
+  podLabels:
+    app.kubernetes.io/name: prometheus
+    app.kubernetes.io/part-of: prometheus
 
   ## Prometheus AlertManager configuration
   ##
@@ -624,14 +632,18 @@ server:
     enabled: false
 
     annotations: {}
-    labels: {}
+    labels:
+      app.kubernetes.io/name: prometheus
+      app.kubernetes.io/part-of: prometheus
     podManagementPolicy: OrderedReady
 
     ## Alertmanager headless service to use for the statefulset
     ##
     headless:
       annotations: {}
-      labels: {}
+      labels:
+        app.kubernetes.io/name: prometheus
+        app.kubernetes.io/part-of: prometheus
       servicePort: 80
       ## Enable gRPC port on service to allow auto discovery with thanos-querier
       gRPC:
@@ -715,7 +727,9 @@ server:
     enabled: true
 
     annotations: {}
-    labels: {}
+    labels:
+      app.kubernetes.io/name: prometheus
+      app.kubernetes.io/part-of: prometheus
     clusterIP: ""
 
     ## List of IP addresses at which the Prometheus server service is available
@@ -851,7 +865,9 @@ pushgateway:
 
   ## Labels to be added to pushgateway pods
   ##
-  podLabels: {}
+  podLabels:
+    app.kubernetes.io/name: pushgateway
+    app.kubernetes.io/part-of: prometheus
 
   ## Specify if a Pod Security Policy for node-exporter must be created
   ## Ref: https://kubernetes.io/docs/concepts/policy/pod-security-policy/
@@ -921,7 +937,9 @@ pushgateway:
   service:
     annotations:
       prometheus.io/probe: pushgateway
-    labels: {}
+    labels:
+      app.kubernetes.io/name: pushgateway
+      app.kubernetes.io/part-of: prometheus
     clusterIP: ""
 
     ## List of IP addresses at which the pushgateway service is available

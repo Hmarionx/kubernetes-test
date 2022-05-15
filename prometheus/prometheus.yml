@@ -6,13 +6,9 @@ metadata:
   name: kube-state-metrics
   namespace: monitoring
   labels:
-    helm.sh/chart: kube-state-metrics-4.7.0
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/component: metrics
-    app.kubernetes.io/part-of: kube-state-metrics
+    app.kubernetes.io/component: kube-state-metrics
+    app.kubernetes.io/part-of: prometheus
     app.kubernetes.io/name: kube-state-metrics
-    app.kubernetes.io/instance: 15.8.5
-    app.kubernetes.io/version: "2.4.1"
   annotations:
     prometheus.io/scrape: 'true'
 spec:
@@ -24,8 +20,9 @@ spec:
     targetPort: 8080
 
   selector:
+    app.kubernetes.io/component: kube-state-metrics
+    app.kubernetes.io/part-of: prometheus
     app.kubernetes.io/name: kube-state-metrics
-    app.kubernetes.io/instance: 15.8.5
 ---
 # Source: prometheus/templates/node-exporter/svc.yaml
 apiVersion: v1
@@ -34,11 +31,9 @@ metadata:
   annotations:
     prometheus.io/scrape: "true"
   labels:
-    component: "node-exporter"
-    app: prometheus
-    release: 15.8.5
-    chart: prometheus-15.8.5
-    heritage: Helm
+    app.kubernetes.io/component: node-exporter
+    app.kubernetes.io/part-of: prometheus
+    app.kubernetes.io/name: prometheus-node-exporter
   name: prometheus-node-exporter
   namespace: monitoring
 spec:
@@ -49,9 +44,9 @@ spec:
       protocol: TCP
       targetPort: 9100
   selector:
-    component: "node-exporter"
-    app: prometheus
-    release: 15.8.5
+    app.kubernetes.io/component: node-exporter
+    app.kubernetes.io/part-of: prometheus
+    app.kubernetes.io/name: prometheus-node-exporter
   type: "ClusterIP"
 ---
 # Source: prometheus/templates/pushgateway/service.yaml
@@ -61,11 +56,9 @@ metadata:
   annotations:
     prometheus.io/probe: pushgateway
   labels:
-    component: "pushgateway"
-    app: prometheus
-    release: 15.8.5
-    chart: prometheus-15.8.5
-    heritage: Helm
+    app.kubernetes.io/component: pushgateway
+    app.kubernetes.io/part-of: prometheus
+    app.kubernetes.io/name: prometheus-pushgateway
   name: prometheus-pushgateway
   namespace: monitoring
 spec:
@@ -75,9 +68,9 @@ spec:
       protocol: TCP
       targetPort: 9091
   selector:
-    component: "pushgateway"
-    app: prometheus
-    release: 15.8.5
+    app.kubernetes.io/component: pushgateway
+    app.kubernetes.io/part-of: prometheus
+    app.kubernetes.io/name: prometheus-pushgateway
   type: "ClusterIP"
 ---
 # Source: prometheus/templates/server/service.yaml
@@ -85,11 +78,9 @@ apiVersion: v1
 kind: Service
 metadata:
   labels:
-    component: "server"
-    app: prometheus
-    release: 15.8.5
-    chart: prometheus-15.8.5
-    heritage: Helm
+    app.kubernetes.io/component: server
+    app.kubernetes.io/part-of: prometheus
+    app.kubernetes.io/name: prometheus-server
   name: prometheus-server
   namespace: monitoring
 spec:
@@ -99,9 +90,9 @@ spec:
       protocol: TCP
       targetPort: 9090
   selector:
-    component: "server"
-    app: prometheus
-    release: 15.8.5
+    app.kubernetes.io/component: server
+    app.kubernetes.io/part-of: prometheus
+    app.kubernetes.io/name: prometheus-server
   sessionAffinity: None
   type: "ClusterIP"
 ---
@@ -110,11 +101,9 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   labels:
-    component: "server"
-    app: prometheus
-    release: 15.8.5
-    chart: prometheus-15.8.5
-    heritage: Helm
+    app.kubernetes.io/component: server
+    app.kubernetes.io/part-of: prometheus
+    app.kubernetes.io/name: prometheus-server
   name: prometheus-server
   namespace: monitoring
 spec:
@@ -130,19 +119,17 @@ apiVersion: apps/v1
 kind: DaemonSet
 metadata:
   labels:
-    component: "node-exporter"
-    app: prometheus
-    release: 15.8.5
-    chart: prometheus-15.8.5
-    heritage: Helm
+    app.kubernetes.io/component: node-exporter
+    app.kubernetes.io/part-of: prometheus
+    app.kubernetes.io/name: prometheus-node-exporter
   name: prometheus-node-exporter
   namespace: monitoring
 spec:
   selector:
     matchLabels:
-      component: "node-exporter"
-      app: prometheus
-      release: 15.8.5
+      app.kubernetes.io/component: node-exporter
+      app.kubernetes.io/part-of: prometheus
+      app.kubernetes.io/name: prometheus-node-exporter
   updateStrategy:
     type: RollingUpdate
   template:
@@ -150,11 +137,9 @@ spec:
       annotations:
         fluentbit.io/parser: logfmt
       labels:
-        component: "node-exporter"
-        app: prometheus
-        release: 15.8.5
-        chart: prometheus-15.8.5
-        heritage: Helm
+        app.kubernetes.io/component: node-exporter
+        app.kubernetes.io/part-of: prometheus
+        app.kubernetes.io/name: prometheus-node-exporter
     spec:
       serviceAccountName: prometheus-node-exporter
       containers:
@@ -215,29 +200,22 @@ metadata:
   name: kube-state-metrics
   namespace: monitoring
   labels:
-    helm.sh/chart: kube-state-metrics-4.7.0
-    app.kubernetes.io/managed-by: Helm
-    app.kubernetes.io/component: metrics
-    app.kubernetes.io/part-of: kube-state-metrics
+    app.kubernetes.io/component: kube-state-metrics
+    app.kubernetes.io/part-of: prometheus
     app.kubernetes.io/name: kube-state-metrics
-    app.kubernetes.io/instance: 15.8.5
-    app.kubernetes.io/version: "2.4.1"
 spec:
   selector:
     matchLabels:
+      app.kubernetes.io/component: kube-state-metrics
+      app.kubernetes.io/part-of: prometheus
       app.kubernetes.io/name: kube-state-metrics
-      app.kubernetes.io/instance: 15.8.5
   replicas: 1
   template:
     metadata:
       labels:
-        helm.sh/chart: kube-state-metrics-4.7.0
-        app.kubernetes.io/managed-by: Helm
-        app.kubernetes.io/component: metrics
-        app.kubernetes.io/part-of: kube-state-metrics
+        app.kubernetes.io/component: kube-state-metrics
+        app.kubernetes.io/part-of: prometheus
         app.kubernetes.io/name: kube-state-metrics
-        app.kubernetes.io/instance: 15.8.5
-        app.kubernetes.io/version: "2.4.1"
     spec:
       hostNetwork: false
       serviceAccountName: kube-state-metrics
@@ -281,19 +259,17 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    component: "pushgateway"
-    app: prometheus
-    release: 15.8.5
-    chart: prometheus-15.8.5
-    heritage: Helm
+    app.kubernetes.io/component: pushgateway
+    app.kubernetes.io/part-of: prometheus
+    app.kubernetes.io/name: prometheus-pushgateway
   name: prometheus-pushgateway
   namespace: monitoring
 spec:
   selector:
     matchLabels:
-      component: "pushgateway"
-      app: prometheus
-      release: 15.8.5
+      app.kubernetes.io/component: pushgateway
+      app.kubernetes.io/part-of: prometheus
+      app.kubernetes.io/name: prometheus-pushgateway
   replicas: 1
   template:
     metadata:
@@ -301,11 +277,9 @@ spec:
 
         fluentbit.io/parser: logfmt
       labels:
-        component: "pushgateway"
-        app: prometheus
-        release: 15.8.5
-        chart: prometheus-15.8.5
-        heritage: Helm
+        app.kubernetes.io/component: pushgateway
+        app.kubernetes.io/part-of: prometheus
+        app.kubernetes.io/name: prometheus-pushgateway
     spec:
       serviceAccountName: prometheus-pushgateway
       containers:
@@ -342,19 +316,17 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   labels:
-    component: "server"
-    app: prometheus
-    release: 15.8.5
-    chart: prometheus-15.8.5
-    heritage: Helm
+    app.kubernetes.io/component: server
+    app.kubernetes.io/part-of: prometheus
+    app.kubernetes.io/name: prometheus-server
   name: prometheus-server
   namespace: monitoring
 spec:
   selector:
     matchLabels:
-      component: "server"
-      app: prometheus
-      release: 15.8.5
+      app.kubernetes.io/component: server
+      app.kubernetes.io/part-of: prometheus
+      app.kubernetes.io/name: prometheus-server
   replicas: 1
   template:
     metadata:
@@ -362,11 +334,9 @@ spec:
 
         fluentbit.io/parser: logfmt
       labels:
-        component: "server"
-        app: prometheus
-        release: 15.8.5
-        chart: prometheus-15.8.5
-        heritage: Helm
+        app.kubernetes.io/component: server
+        app.kubernetes.io/part-of: prometheus
+        app.kubernetes.io/name: prometheus-server
     spec:
       enableServiceLinks: true
       serviceAccountName: prometheus-server

@@ -4,7 +4,8 @@ metadata:
   name: loki
   namespace: logging
   labels:
-    app: loki
+    app.kubernetes.io/name: loki
+    app.kubernetes.io/part-of: loki
 data:
   loki.yaml: |-
     auth_enabled: false
@@ -62,11 +63,8 @@ metadata:
   name: fluent-bit
   namespace: logging
   labels:
-    helm.sh/chart: fluent-bit-0.20.0
     app.kubernetes.io/name: fluent-bit
-    app.kubernetes.io/instance: fluent-bit
-    app.kubernetes.io/version: "1.9.3"
-    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: fluent-bit
 data:
   custom_parsers.conf: |
     [PARSER]

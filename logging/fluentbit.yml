@@ -6,11 +6,8 @@ metadata:
   name: fluent-bit
   namespace: logging
   labels:
-    helm.sh/chart: fluent-bit-0.20.0
     app.kubernetes.io/name: fluent-bit
-    app.kubernetes.io/instance: fluent-bit
-    app.kubernetes.io/version: "1.9.3"
-    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: fluent-bit
 spec:
   type: ClusterIP
   ports:
@@ -20,7 +17,7 @@ spec:
       name: http
   selector:
     app.kubernetes.io/name: fluent-bit
-    app.kubernetes.io/instance: fluent-bit
+    app.kubernetes.io/part-of: fluent-bit
 ---
 # Source: fluent-bit/templates/daemonset.yaml
 apiVersion: apps/v1
@@ -29,16 +26,13 @@ metadata:
   name: fluent-bit
   namespace: logging
   labels:
-    helm.sh/chart: fluent-bit-0.20.0
     app.kubernetes.io/name: fluent-bit
-    app.kubernetes.io/instance: fluent-bit
-    app.kubernetes.io/version: "1.9.3"
-    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/part-of: fluent-bit
 spec:
   selector:
     matchLabels:
       app.kubernetes.io/name: fluent-bit
-      app.kubernetes.io/instance: fluent-bit
+      app.kubernetes.io/part-of: fluent-bit
   template:
     metadata:
       annotations:
@@ -46,7 +40,7 @@ spec:
         checksum/luascripts: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855
       labels:
         app.kubernetes.io/name: fluent-bit
-        app.kubernetes.io/instance: fluent-bit
+        app.kubernetes.io/part-of: fluent-bit
     spec:
       serviceAccountName: fluent-bit
       hostNetwork: false
